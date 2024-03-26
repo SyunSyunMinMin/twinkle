@@ -1,12 +1,7 @@
-# Reporting a security issue
+# セキュリティ問題の報告
 
-Although rare, we take security bugs in Twinkle seriously.
+もしセキュリティ上の問題を見つけたら、**非公開** で連絡してください。
 
-If you believe you have found a security issue, please **privately** contact one or both of the currently-active maintainers:
+* @Syunsyunminmin: [メール](https://ja.wikipedia.org/wiki/Special:EmailUser/Syunsyunminmin)
 
-* @Amorymeltzer: [Email](https://en.wikipedia.org/wiki/Special:EmailUser/Amorymeltzer)
-* @MusikAnimal: [Email](https://en.wikipedia.org/wiki/Special:EmailUser/MusikAnimal)
-
-Please include "Twinkle Security" in the subject line and include as much information in the body as you are capable of providing.  We will respond as quickly as we are able with further steps.
-
-If one of use doesn't respond in a timely fashion, you can try to [contact another interface-admin](https://en.wikipedia.org/wiki/Special:ActiveUsers?groups=interface-admin&excludegroups=bot) with the same information.
+件名に"Twinkle Security"と記載の上、本文に可能な範囲でいいので情報を記入してください。
