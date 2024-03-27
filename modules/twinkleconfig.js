@@ -8,7 +8,7 @@
  ****************************************
  *** twinkleconfig.js: Preferences module
  ****************************************
- * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences,
+ * Mode of invocation:     Adds configuration form to User:Syunsyunminmin/Twinkle/Preferences,
                            and adds an ad box to the top of user subpages belonging to the
                            currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
@@ -22,13 +22,13 @@
 Twinkle.config = {};
 
 Twinkle.config.watchlistEnums = {
-	'yes': 'Add to watchlist (indefinitely)',
-	'no': "Don't add to watchlist",
-	'default': 'Follow your site preferences',
-	'1 week': 'Watch for 1 week',
-	'1 month': 'Watch for 1 month',
-	'3 months': 'Watch for 3 months',
-	'6 months': 'Watch for 6 months'
+	'yes': 'ウォッチリストに追加 (無期限)',
+	'no': 'ウォッチリストに追加しない',
+	'default': 'サイトの設定に従う',
+	'1 week': '1週間ウォッチ',
+	'1 month': '1ヶ月ウォッチ',
+	'3 months': '3ヶ月ウォッチ',
+	'6 months': '6ヶ月ウォッチ'
 };
 
 Twinkle.config.commonSets = {
@@ -145,7 +145,7 @@ Twinkle.config.commonSets = {
 
 Twinkle.config.sections = [
 	{
-		title: 'General',
+		title: '全般',
 		module: 'general',
 		preferences: [
 			// TwinkleConfig.userTalkPageMode may take arguments:
@@ -154,23 +154,23 @@ Twinkle.config.sections = [
 			// 'blank': force open in a new window, even if such a window exists
 			{
 				name: 'userTalkPageMode',
-				label: 'When opening a user talk page, open it',
+				label: '利用者会話ページを開く時は次のページで開く',
 				type: 'enum',
-				enumValues: { window: 'In a window, replacing other user talks', tab: 'In a new tab', blank: 'In a totally new window' }
+				enumValues: { window: 'ウィンドウ内で他の利用者会話ページを置き換える', tab: '新しいタブ', blank: '完全に新しいウィンドウ' }
 			},
 
 			// TwinkleConfig.dialogLargeFont (boolean)
 			{
 				name: 'dialogLargeFont',
-				label: 'Use larger text in Twinkle dialogs',
+				label: 'Twinkleダイアログで大きな文字を使用する',
 				type: 'boolean'
 			},
 
 			// Twinkle.config.disabledModules (array)
 			{
 				name: 'disabledModules',
-				label: 'Turn off the selected Twinkle modules',
-				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
+				label: '選択したTwinkleモジュールをオフにする',
+				helptip: 'ここで選択したものは使用できないので、注意してください。再び有効にするにはチェックを外してください。',
 				type: 'set',
 				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', fluff: 'Revert and rollback' }
 			},
@@ -178,8 +178,8 @@ Twinkle.config.sections = [
 			// Twinkle.config.disabledSysopModules (array)
 			{
 				name: 'disabledSysopModules',
-				label: 'Turn off the selected admin-only modules',
-				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
+				label: '選択した管理者専用モジュールをオフにする',
+				helptip: 'ここで選択したものは使用できないので、注意してください。再び有効にするにはチェックを外してください。',
 				adminOnly: true,
 				type: 'set',
 				setValues: { block: 'Block', deprod: 'DePROD', batchdelete: 'D-batch', batchprotect: 'P-batch', batchundelete: 'Und-batch' }
@@ -338,15 +338,15 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Revert and rollback',  // twinklefluff module
+		title: '差し戻しと巻き戻し',  // twinklefluff module
 		module: 'fluff',
 		preferences: [
 			// TwinkleConfig.autoMenuAfterRollback (bool)
 			// Option to automatically open the warning menu if the user talk page is opened post-reversion
 			{
 				name: 'autoMenuAfterRollback',
-				label: 'Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback',
-				helptip: 'Only operates if the relevant box is checked below.',
+				label: 'Twinkle差し戻し後、利用者会話ページでTwinkle警告メニューを自動的に開く',
+				helptip: '以下の該当するボックスにチェックが入っている場合のみ動作します。',
 				type: 'boolean'
 			},
 
@@ -354,17 +354,17 @@ Twinkle.config.sections = [
 			// What types of actions that should result in opening of talk page
 			{
 				name: 'openTalkPage',
-				label: 'Open user talk page after these types of reversions',
+				label: '以下の種類の差し戻し後に、会話ページを開く。',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback' }
+				setValues: { norm: '通常の差し戻し', vand: '荒らしの差し戻し' }
 			},
 
 			// TwinkleConfig.openTalkPageOnAutoRevert (bool)
 			// Defines if talk page should be opened when calling revert from contribs or recent changes pages. If set to true, openTalkPage defines then if talk page will be opened.
 			{
 				name: 'openTalkPageOnAutoRevert',
-				label: 'Open user talk page when invoking rollback from user contributions or recent changes',
-				helptip: 'When this is on, the desired options must be enabled in the previous setting for this to work.',
+				label: '投稿記録や最近の更新から差し戻しを実行した際に、会話ページを開く',
+				helptip: 'これが有効になっている場合、前の設定で必要なオプションが有効になっていなければ機能しません。',
 				type: 'boolean'
 			},
 
@@ -372,8 +372,8 @@ Twinkle.config.sections = [
 			//
 			{
 				name: 'rollbackInPlace',
-				label: "Don't reload the page when rolling back from contributions or recent changes",
-				helptip: "When this is on, Twinkle won't reload the contributions or recent changes feed after reverting, allowing you to revert more than one edit at a time.",
+				label: '投稿記録や最近の更新から差し戻しする際、ページを更新しない。',
+				helptip: 'これが有効になっている場合、Twinkleは差し戻し後に投稿記録や最近の更新フィードを再読み込みしないため、一度に複数の編集を差し戻すことができます。',
 				type: 'boolean'
 			},
 
@@ -381,24 +381,24 @@ Twinkle.config.sections = [
 			// What types of actions that should result in marking edit as minor
 			{
 				name: 'markRevertedPagesAsMinor',
-				label: 'Mark as minor edit for these types of reversions',
+				label: '以下の種類の差し戻しは細部の編集として行います',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback', torev: '"Restore this version"' }
+				setValues: { norm: '通常の差し戻し', vand: '荒らしの差し戻し', torev: '"版の復元"' }
 			},
 
 			// TwinkleConfig.watchRevertedPages (array)
 			// What types of actions that should result in forced addition to watchlist
 			{
 				name: 'watchRevertedPages',
-				label: 'Add pages to watchlist for these types of reversions',
+				label: '以下の種類の差し戻しの際、ページをウォッチリストに追加する',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback', torev: '"Restore this version"' }
+				setValues: { norm: '通常の差し戻し', vand: '荒らしの差し戻し', torev: '"版の復元"' }
 			},
 			// TwinkleConfig.watchRevertedExpiry
 			// If any of the above items are selected, whether to expire the watch
 			{
 				name: 'watchRevertedExpiry',
-				label: 'When reverting a page, how long to watch it for',
+				label: 'ページを差し戻した際、ウォッチする期間は',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -407,22 +407,22 @@ Twinkle.config.sections = [
 			// If to offer a prompt for extra summary reason for normal reverts, default to true
 			{
 				name: 'offerReasonOnNormalRevert',
-				label: 'Prompt for reason for normal rollbacks',
-				helptip: '"Normal" rollbacks are the ones that are invoked from the middle [rollback] link.',
+				label: '通常の差し戻しに理由の入力を求めるプロンプト',
+				helptip: '"通常の"差し戻しは [差し戻し] リンクから実行される差し戻しです。',
 				type: 'boolean'
 			},
 
 			{
 				name: 'confirmOnFluff',
-				label: 'Require confirmation before reverting (all devices)',
-				helptip: 'For users of pen or touch devices, and chronically indecisive people.',
+				label: '差し戻す前に確認を求める (すべての機器)',
+				helptip: 'ペンやタッチデバイスを使う人、慢性的に優柔不断な人向け。',
 				type: 'boolean'
 			},
 
 			{
 				name: 'confirmOnMobileFluff',
-				label: 'Require confirmation before reverting (mobile devices only)',
-				helptip: 'Avoid accidental reversions when on mobile devices.',
+				label: '差し戻す前に確認を求める (携帯機器のみ)',
+				helptip: '携帯機器での誤動作を防ぐ。',
 				type: 'boolean'
 			},
 
@@ -432,9 +432,15 @@ Twinkle.config.sections = [
 			// Note from TTO: |contribs| seems to be equal to |others| + |mine|, i.e. redundant, so I left it out heres
 			{
 				name: 'showRollbackLinks',
-				label: 'Show rollback links on these pages',
+				label: 'これらのページで差し戻しリンクを表示',
 				type: 'set',
-				setValues: { diff: 'Diff pages', others: 'Contributions pages of other users', mine: 'My contributions page', recent: 'Recent changes and related changes special pages', history: 'History pages' }
+				setValues: { diff: '差分ページ', others: '他の利用者の投稿記録ページ', mine: '自分の投稿記録ページ', recent: '最近の更新や関連ページの更新の特別ページ', history: '履歴ページ' }
+			},
+			{
+				name: 'SummaryOnVandalRevert',
+				label: '荒らしの差し戻しの際の要約欄をカスタムする',
+				helptip: 'このボックスに要約を入力します。',
+				type: 'string'
 			}
 		]
 	},
@@ -984,8 +990,8 @@ Twinkle.config.sections = [
 
 Twinkle.config.init = function twinkleconfigInit() {
 
-	// create the config page at Wikipedia:Twinkle/Preferences
-	if ((mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle') === 'Twinkle/Preferences') &&
+	// create the config page at User:Syunsyunminmin/Twinkle/Preferences
+	if ((mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').user && mw.config.get('wgTitle') === 'Syunsyunminmin/Twinkle/Preferences') &&
 			mw.config.get('wgAction') === 'view') {
 
 		if (!document.getElementById('twinkle-config')) {
@@ -1020,7 +1026,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var toctitle = document.createElement('div');
 		toctitle.id = 'toctitle';
 		var toch2 = document.createElement('h2');
-		toch2.textContent = 'Contents ';
+		toch2.textContent = '目次 ';
 		toctitle.appendChild(toch2);
 		// add TOC show/hide link
 		var toctoggle = document.createElement('span');
@@ -1029,7 +1035,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var toctogglelink = document.createElement('a');
 		toctogglelink.className = 'internal';
 		toctogglelink.setAttribute('href', '#tw-tocshowhide');
-		toctogglelink.textContent = 'hide';
+		toctogglelink.textContent = '非表示';
 		toctoggle.appendChild(toctogglelink);
 		toctoggle.appendChild(document.createTextNode(']'));
 		toctitle.appendChild(toctoggle);
@@ -1040,9 +1046,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 			var $tocul = $(tocul);
 			$tocul.toggle();
 			if ($tocul.find(':visible').length) {
-				toctogglelink.textContent = 'hide';
+				toctogglelink.textContent = '非表示';
 			} else {
-				toctogglelink.textContent = 'show';
+				toctogglelink.textContent = '表示';
 			}
 		}, false);
 		toctable.appendChild(tocul);
@@ -1246,12 +1252,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 							value: gotPref,
 							pref: pref
 						});
-						button.appendChild(document.createTextNode('Edit items'));
+						button.appendChild(document.createTextNode('アイテムを編集'));
 						cell.appendChild(button);
 						break;
 
 					default:
-						alert('twinkleconfig: unknown data type for preference ' + pref.name);
+						alert('twinkleconfig: 設定 ' + pref.name + ' の不明なデータ型');
 						break;
 				}
 				row.appendChild(cell);
@@ -1274,7 +1280,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 					resetlink.addEventListener('click', Twinkle.config.resetPrefLink, false);
 					resetlink.style.cssFloat = 'right';
 					resetlink.style.margin = '0 0.6em';
-					resetlink.appendChild(document.createTextNode('Reset'));
+					resetlink.appendChild(document.createTextNode('初期化'));
 					cell.appendChild(resetlink);
 				}
 				row.appendChild(cell);
@@ -1292,7 +1298,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var button = document.createElement('button');
 		button.setAttribute('id', 'twinkle-config-submit');
 		button.setAttribute('type', 'submit');
-		button.appendChild(document.createTextNode('Save changes'));
+		button.appendChild(document.createTextNode('変更を保存'));
 		footerbox.appendChild(button);
 		var footerspan = document.createElement('span');
 		footerspan.className = 'plainlinks';
@@ -1302,7 +1308,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		footera.setAttribute('href', '#tw-reset-all');
 		footera.setAttribute('id', 'twinkle-config-resetall');
 		footera.addEventListener('click', Twinkle.config.resetAllPrefs, false);
-		footera.appendChild(document.createTextNode('Restore defaults'));
+		footera.appendChild(document.createTextNode('デフォルトに戻す'));
 		footerspan.appendChild(footera);
 		footerbox.appendChild(footerspan);
 		contentform.appendChild(footerbox);
@@ -1330,28 +1336,31 @@ Twinkle.config.init = function twinkleconfigInit() {
 			// place "why not try the preference panel" notice
 			box.setAttribute('class', 'config-twopt-box');
 
-			if (mw.config.get('wgArticleId') > 0) {  // page exists
-				box.appendChild(document.createTextNode('This page contains your Twinkle preferences. You can change them using the '));
-			} else {  // page does not exist
-				box.appendChild(document.createTextNode('You can customize Twinkle to suit your preferences by using the '));
-			}
 			link = document.createElement('a');
-			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').project] + ':Twinkle/Preferences'));
-			link.appendChild(document.createTextNode('Twinkle preferences panel'));
-			box.appendChild(link);
-			box.appendChild(document.createTextNode(', or by editing this page.'));
+			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':Syunsyunminmin/Twinkle/Preferences'));
+			link.appendChild(document.createTextNode('Twinkle個人設定パネル'));
+
+			if (mw.config.get('wgArticleId') > 0) {  // page exists
+				box.appendChild(document.createTextNode('このページにはTwinkleの設定が含まれています。設定は '));
+				box.appendChild(link);
+				box.appendChild(document.createTextNode('を使用するか、このページを編集することで変更できます。'));
+			} else {  // page does not exist
+				box.appendChild(link);
+				box.appendChild(document.createTextNode('またはこのページを編集することで、Twinkleを個人の好みに合わせてカスタマイズできます。'));
+			}
+
 			$(box).insertAfter($('#contentSub'));
 
 		} else if (['monobook', 'vector', 'vector-2022', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].indexOf(scriptPageName) !== -1) {
 			// place "Looking for Twinkle options?" notice
 			box.setAttribute('class', 'config-userskin-box');
 
-			box.appendChild(document.createTextNode('If you want to set Twinkle preferences, you can use the '));
+			box.appendChild(document.createTextNode('Twinkle個人設定を設定したい場合、'));
 			link = document.createElement('a');
-			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').project] + ':Twinkle/Preferences'));
-			link.appendChild(document.createTextNode('Twinkle preferences panel'));
+			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').project] + ':Syunsyunminmin/Twinkle/Preferences'));
+			link.appendChild(document.createTextNode('Twinkle個人設定パネル'));
 			box.appendChild(link);
-			box.appendChild(document.createTextNode('.'));
+			box.appendChild(document.createTextNode('を使用して行えます。'));
 			$(box).insertAfter($('#contentSub'));
 		}
 	}
@@ -1369,10 +1378,11 @@ Twinkle.config.listDialog.addRow = function twinkleconfigListDialogAddRow($dlgta
 			$('<td>').append(
 				$('<button>')
 					.attr('type', 'button')
+					.css('white-space', 'nowrap')
 					.on('click', function () {
 						$contenttr.remove();
 					})
-					.text('Remove')
+					.text('除去')
 			),
 			$('<td>').append(
 				$valueInput = $('<input>')
@@ -1405,7 +1415,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 
 	var dialog = new Morebits.simpleWindow(720, 400);
 	dialog.setTitle(curpref.label);
-	dialog.setScriptName('Twinkle preferences');
+	dialog.setScriptName('Twinkle個人設定');
 
 	var $dlgtbody;
 
@@ -1437,7 +1447,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 								.attr('colspan', '3')
 								.append(
 									$('<button>')
-										.text('Add')
+										.text('追加')
 										.css('min-width', '8em')
 										.attr('type', 'button')
 										.on('click', function () {
@@ -1448,20 +1458,20 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 					)
 				),
 			$('<button>')
-				.text('Save changes')
+				.text('変更を保存')
 				.attr('type', 'submit') // so Morebits.simpleWindow puts the button in the button pane
 				.on('click', function () {
 					Twinkle.config.listDialog.save($prefbutton, $dlgtbody);
 					dialog.close();
 				}),
 			$('<button>')
-				.text('Reset')
+				.text('初期化')
 				.attr('type', 'submit')
 				.on('click', function () {
 					Twinkle.config.listDialog.reset($prefbutton, $dlgtbody);
 				}),
 			$('<button>')
-				.text('Cancel')
+				.text('キャンセル')
 				.attr('type', 'submit')
 				.on('click', function () {
 					dialog.close();
@@ -1575,7 +1585,7 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 			break;
 
 		default:
-			alert('twinkleconfig: unknown data type for preference ' + pref.name);
+			alert('twinkleconfig: 設定 ' + pref.name + ' の不明なデータ型');
 			break;
 	}
 };
@@ -1600,7 +1610,7 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 	Morebits.status.init(document.getElementById('twinkle-config-content'));
 
 	var userjs = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':' + mw.config.get('wgUserName') + '/twinkleoptions.js';
-	var wikipedia_page = new Morebits.wiki.page(userjs, 'Saving preferences to ' + userjs);
+	var wikipedia_page = new Morebits.wiki.page(userjs, userjs + 'に設定を保存');
 	wikipedia_page.setCallbackParameters(e.target);
 	wikipedia_page.load(Twinkle.config.writePrefs);
 
@@ -1665,7 +1675,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 						case 'integer':  // read from the input box
 							userValue = parseInt(form[pref.name].value, 10);
 							if (isNaN(userValue)) {
-								Morebits.status.warn('Saving', 'The value you specified for ' + pref.name + ' (' + pref.value + ') was invalid.  The save will continue, but the invalid data value will be skipped.');
+								Morebits.status.warn('保存', pref.name + 'に対して指定した値 (' + pref.value + ') は無効です。保存は続行しますが、無効なデータ値は飛ばされます。');
 								userValue = null;
 							}
 							break;
@@ -1694,7 +1704,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 							break;
 
 						default:
-							alert('twinkleconfig: unknown data type for preference ' + pref.name);
+							alert('twinkleconfig: 設定 ' + pref.name + ' の不明なデータ型');
 							break;
 					}
 				} else if (Twinkle.prefs) {
@@ -1712,15 +1722,15 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	});
 
 	var text =
-		'// twinkleoptions.js: personal Twinkle preferences file\n' +
+		'// twinkleoptions.js: Twinkleの個人設定ファイル\n' +
 		'//\n' +
-		'// NOTE: The easiest way to change your Twinkle preferences is by using the\n' +
-		'// Twinkle preferences panel, at [[' + Morebits.pageNameNorm + ']].\n' +
+		'// 注意: Twinkleの設定を変更する最も簡単な方法は、\n' +
+		'// Twinkle設定パネルを使用することです。設定パネルは[[' + Morebits.pageNameNorm + ']]にあります。\n' +
 		'//\n' +
-		'// This file is AUTOMATICALLY GENERATED.  Any changes you make (aside from\n' +
-		'// changing the configuration parameters in a valid-JavaScript way) will be\n' +
-		'// overwritten the next time you click "save" in the Twinkle preferences\n' +
-		'// panel.  If modifying this file, make sure to use correct JavaScript.\n' +
+		'// このファイルは自動的に生成されます。\n' +
+		'// （有効なJavaScriptの方法で構成パラメーターを変更する以外に）行った変更は、\n' +
+		'// 次にTwinkle設定パネルで「保存」をクリックしたときに上書きされます。\n' +
+		'// このファイルを直接変更する場合は、必ず正しいJavaScriptを使用してください。\n' +
 		'// <no' + 'wiki>\n' +
 		'\n' +
 		'window.Twinkle.prefs = ';
@@ -1732,20 +1742,20 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		'// End of twinkleoptions.js\n';
 
 	pageobj.setPageText(text);
-	pageobj.setEditSummary('Saving Twinkle preferences: automatic edit from [[:' + Morebits.pageNameNorm + ']]');
+	pageobj.setEditSummary('Twinkle個人設定を保存: [[:' + Morebits.pageNameNorm + ']]からの自動編集');
 	pageobj.setChangeTags(Twinkle.changeTags);
 	pageobj.setCreateOption('recreate');
 	pageobj.save(Twinkle.config.saveSuccess);
 };
 
 Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
-	pageobj.getStatusElement().info('successful');
+	pageobj.getStatusElement().info('成功');
 
 	var noticebox = document.createElement('div');
 	noticebox.className = 'mw-message-box mw-message-box-success';
 	noticebox.style.fontSize = '100%';
 	noticebox.style.marginTop = '2em';
-	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <b>clear your browser cache entirely</b> (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
+	noticebox.innerHTML = '<p><b>Twinkle個人設定は保存されました。</b></p><p>変更を確認するには、<b>ブラウザのキャッシュを完全にクリアする</b>必要があります。 (手順については <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> 参照</p>';
 	Morebits.status.root.appendChild(noticebox);
 	var noticeclear = document.createElement('br');
 	noticeclear.style.clear = 'both';
