@@ -62,7 +62,7 @@ Twinkle.fluff.trustedBots = ['AnomieBOT', 'SineBot', 'MajavahBot'];
 Twinkle.fluff.skipTalk = null;
 Twinkle.fluff.rollbackInPlace = null;
 // String to insert when a username is hidden
-Twinkle.fluff.hiddenName = 'an unknown user';
+Twinkle.fluff.hiddenName = '不明な利用者';
 
 // Consolidated construction of fluff links
 Twinkle.fluff.linkBuilder = {
@@ -114,8 +114,8 @@ Twinkle.fluff.linkBuilder = {
 		var normNode = document.createElement('span');
 		var vandNode = document.createElement('span');
 
-		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
-		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
+		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', '差し戻し');
+		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', '荒らし');
 
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
@@ -134,25 +134,10 @@ Twinkle.fluff.linkBuilder = {
 		normNode.setAttribute('class', 'tw-rollback-link-normal');
 		vandNode.setAttribute('class', 'tw-rollback-link-vandalism');
 
-		normNode.appendChild(sepNode1);
 		vandNode.appendChild(sepNode2);
 
 		normNode.appendChild(normLink);
 		vandNode.appendChild(vandLink);
-
-		if (!inline) {
-			var agfNode = document.createElement('span');
-			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click(function(e) {
-				e.preventDefault();
-				Twinkle.fluff.revert('agf', vandal, rev, page);
-				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
-			});
-			agfNode.setAttribute('class', 'tw-rollback-link-agf');
-			agfLink.style.fontWeight = 'bold';
-			agfNode.appendChild(agfLink);
-			revNode.appendChild(agfNode);
-		}
 
 		revNode.appendChild(normNode);
 		revNode.appendChild(vandNode);
@@ -171,7 +156,7 @@ Twinkle.fluff.linkBuilder = {
 		revertToRevisionNode.setAttribute('id', 'tw-revert-to-' + revisionRef);
 		revertToRevisionNode.style.fontWeight = 'bold';
 
-		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
+		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'この版を復元');
 		$(revertToRevisionLink).click(function(e) {
 			e.preventDefault();
 			Twinkle.fluff.revertToRevision(revisionRef);
@@ -368,7 +353,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		var notifyStatus = document.createElement('span');
 		mw.notify(notifyStatus, {
 			autoHide: false,
-			title: 'Rollback on ' + page,
+			title: page + 'の差し戻し',
 			tag: 'twinklefluff_' + rev // Shouldn't be necessary given disableLink
 		});
 		Morebits.status.init(notifyStatus);
@@ -398,7 +383,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main);
+	var wikipedia_api = new Morebits.wiki.api('以前のリビジョンのデータを取得', query, Twinkle.fluff.callbacks.main);
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
@@ -420,7 +405,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision);
+	var wikipedia_api = new Morebits.wiki.api('以前の版のデータを取得', query, Twinkle.fluff.callbacks.toRevision);
 	wikipedia_api.params = { rev: oldrev };
 	wikipedia_api.post();
 };
@@ -442,17 +427,17 @@ Twinkle.fluff.callbacks = {
 		var revertToUserHidden = !!rev.userhidden;
 
 		if (revertToRevID !== apiobj.params.rev) {
-			apiobj.statelem.error('The retrieved revision does not match the requested revision. Stopping revert.');
+			apiobj.statelem.error('取得した版が要求された版と一致しませんでした。差し戻しを中止します。');
 			return;
 		}
 
-		var optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
+		var optional_summary = prompt('差し戻しの理由を入力してください:                                ', '');  // padded out to widen prompt in Firefox
 		if (optional_summary === null) {
-			apiobj.statelem.error('Aborted by user.');
+			apiobj.statelem.error('利用者により中止。');
 			return;
 		}
 
-		var summary = Twinkle.fluff.formatSummary('Restored revision ' + revertToRevID + ' by $USER',
+		var summary = Twinkle.fluff.formatSummary('$USER による ID:' + revertToRevID + 'の版を復元',
 			revertToUserHidden ? null : revertToUser, optional_summary);
 
 		var query = {
@@ -488,7 +473,7 @@ Twinkle.fluff.callbacks = {
 		Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
 
-		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, apiobj.statelem);
+		var wikipedia_api = new Morebits.wiki.api('差し戻した内容を保存しています', query, Twinkle.fluff.callbacks.complete, apiobj.statelem);
 		wikipedia_api.params = apiobj.params;
 		wikipedia_api.post();
 	},
@@ -500,7 +485,7 @@ Twinkle.fluff.callbacks = {
 
 		var page = response.query.pages[0];
 		if (!page.actions.edit) {
-			apiobj.statelem.error("Unable to edit the page, it's probably protected.");
+			apiobj.statelem.error('ページを編集できませんでした。おそらく保護されています。');
 			return;
 		}
 
@@ -513,14 +498,14 @@ Twinkle.fluff.callbacks = {
 		var params = apiobj.params;
 
 		if (revs.length < 1) {
-			statelem.error('We have less than one additional revision, thus impossible to revert.');
+			statelem.error('版の数が1版以下であるため、差し戻すことは不可能です。');
 			return;
 		}
 		var top = revs[0];
 		var lastuser = top.user;
 
 		if (lastrevid < params.revid) {
-			Morebits.status.error('Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode('strong', lastrevid), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Stopping revert.' ]);
+			Morebits.status.error('Error', [ 'サーバーから取得した最新の版ID（', Morebits.htmlNode('strong', lastrevid), '）が表示されている版のIDより小さいです。現在の版が削除されたか、サーバーの遅延、または誤ったデータを取得した可能性があります。差し戻しを停止します。' ]);
 			return;
 		}
 
@@ -528,20 +513,17 @@ Twinkle.fluff.callbacks = {
 		var userNorm = params.user || Twinkle.fluff.hiddenName;
 		var index = 1;
 		if (params.revid !== lastrevid) {
-			Morebits.status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', params.revid) ]);
+			Morebits.status.warn('Warning', [ '最新版 ', Morebits.htmlNode('strong', lastrevid), ' は現在の版 ', Morebits.htmlNode('strong', params.revid), ' と一致しません。']);
 			// Treat ipv6 users on same 64 block as the same
 			if (lastuser === params.user || (mw.util.isIPv6Address(params.user) && Morebits.ip.get64(lastuser) === Morebits.ip.get64(params.user))) {
 				switch (params.type) {
 					case 'vand':
 						var diffUser = lastuser !== params.user;
-						Morebits.status.info('Info', [ 'Latest revision was ' + (diffUser ? '' : 'also ') + 'made by ', Morebits.htmlNode('strong', userNorm),
-							diffUser ? ', which is on the same /64 subnet' : '', '. As we assume vandalism, we will proceed to revert.' ]);
+						Morebits.status.info('Info', [ '最新版' + (diffUser ? 'は同じ/64サブネット上の' : 'も'), Morebits.htmlNode('strong', userNorm),
+							'による編集です。破壊行為とみなして、差し戻しを進めます。' ]);
 						break;
-					case 'agf':
-						Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
-						return;
 					default:
-						Morebits.status.warn('Notice', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), ', but we will stop the revert.' ]);
+						Morebits.status.warn('Notice', [ '最新版は ', Morebits.htmlNode('strong', userNorm), ' によるものですが、差し戻しを停止します。' ]);
 						return;
 				}
 			} else if (params.type === 'vand' &&
@@ -552,7 +534,7 @@ Twinkle.fluff.callbacks = {
 				Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
 				index = 2;
 			} else {
-				Morebits.status.error('Error', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', so it might have already been reverted, we will stop the revert.']);
+				Morebits.status.error('Error', [ '最新版は ', Morebits.htmlNode('strong', lastuser), ' によるものであるため既に差し戻されたかもしれません。差し戻しを停止します。']);
 				return;
 			}
 
@@ -571,9 +553,6 @@ Twinkle.fluff.callbacks = {
 					params.user = revs[1].user;
 					params.userHidden = !!revs[1].userhidden;
 					break;
-				case 'agf':
-					Morebits.status.warn('Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot and thus AGF rollback will not proceed.' ]);
-					return;
 				case 'norm':
 				/* falls through */
 				default:
@@ -600,7 +579,7 @@ Twinkle.fluff.callbacks = {
 				// Treat ipv6 users on same 64 block as the same
 				if (mw.util.isIPv6Address(revs[i].user) && Morebits.ip.get64(revs[i].user) === Morebits.ip.get64(params.user)) {
 					if (!seen64) {
-						new Morebits.status('Note', 'Treating consecutive IPv6 addresses in the same /64 as the same user');
+						new Morebits.status('Note', '連続してる同じ/64サブネット内のIPv6アドレスは同じ利用者として扱います。');
 						seen64 = true;
 					}
 					continue;
@@ -612,19 +591,20 @@ Twinkle.fluff.callbacks = {
 
 		if (!found) {
 			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or they have made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
+			statelem.error([ '以前の版が見つかりませんでした。もしかすると', Morebits.htmlNode('strong', userNorm), 'が唯一の投稿者であるか、' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + '回以上の編集を連続して行ったかもしれません。' ]);
 			return;
 		}
 
 		if (!count) {
-			Morebits.status.error('Error', 'As it is not possible to revert zero revisions, we will stop this revert. It could be that the edit has already been reverted, but the revision ID was still the same.');
+			Morebits.status.error('Error', '0版を差し戻すことはできませんので、差し戻しを中止します。編集が既に差し戻されているにもかかわらず、版IDが同じままになっている可能性があります。');
 			return;
 		}
 
 		var good_revision = revs[found];
 		var userHasAlreadyConfirmedAction = false;
 		if (params.type !== 'vand' && count > 1) {
-			if (!confirm(userNorm + ' has made ' + mw.language.convertNumber(count) + ' edits in a row. Are you sure you want to revert them all?')) {
-				Morebits.status.info('Notice', 'Stopping revert.');
+			if (!confirm(userNorm + ' は' + mw.language.convertNumber(count) + '回以上の編集を連続して行いました。本当にすべて差し戻しますか？')) {
+				Morebits.status.info('Notice', '差し戻しを中止');
 				return;
 			}
 			userHasAlreadyConfirmedAction = true;
@@ -640,36 +620,23 @@ Twinkle.fluff.callbacks = {
 
 		var summary, extra_summary;
 		switch (params.type) {
-			case 'agf':
-				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
-				if (extra_summary === null) {
-					statelem.error('Aborted by user.');
-					return;
-				}
-				userHasAlreadyConfirmedAction = true;
-
-				summary = Twinkle.fluff.formatSummary('Reverted [[WP:AGF|good faith]] edits by $USER',
-					params.userHidden ? null : params.user, extra_summary);
-				break;
-
 			case 'vand':
-				summary = Twinkle.fluff.formatSummary('Reverted ' + params.count + (params.count > 1 ? ' edits' : ' edit') + ' by $USER to last revision by ' +
-					(params.gooduserHidden ? Twinkle.fluff.hiddenName : params.gooduser), params.userHidden ? null : params.user);
+				summary = Twinkle.getPref('vandusersummary') ? Twinkle.getPref('vandusersummary') : Twinkle.getPref('SummaryOnVandalRevert');
 				break;
 
 			case 'norm':
 			/* falls through */
 			default:
 				if (Twinkle.getPref('offerReasonOnNormalRevert')) {
-					extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
+					extra_summary = prompt('編集要約用の追加コメント:                              ', '');  // padded out to widen prompt in Firefox
 					if (extra_summary === null) {
-						statelem.error('Aborted by user.');
+						statelem.error('利用者により中止。');
 						return;
 					}
 					userHasAlreadyConfirmedAction = true;
 				}
 
-				summary = Twinkle.fluff.formatSummary('Reverted ' + params.count + (params.count > 1 ? ' edits' : ' edit') + ' by $USER',
+				summary = Twinkle.fluff.formatSummary('$USER による' + params.count + '版を差し戻し',
 					params.userHidden ? null : params.user, extra_summary);
 				break;
 		}
@@ -677,7 +644,7 @@ Twinkle.fluff.callbacks = {
 		if ((Twinkle.getPref('confirmOnFluff') ||
 			// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
 			(Twinkle.getPref('confirmOnMobileFluff') && /Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent))) &&
-			!userHasAlreadyConfirmedAction && !confirm('Reverting page: are you sure?')) {
+			!userHasAlreadyConfirmedAction && !confirm('ページの差し戻し: よろしいですか？')) {
 			statelem.error('Aborted by user.');
 			return;
 		}
@@ -733,9 +700,9 @@ Twinkle.fluff.callbacks = {
 		if (!Twinkle.fluff.rollbackInPlace) {
 			Morebits.wiki.actionCompleted.redirect = params.pagename;
 		}
-		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
+		Morebits.wiki.actionCompleted.notice = '復元完了';
 
-		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, statelem);
+		var wikipedia_api = new Morebits.wiki.api('差し戻した内容を保存します', query, Twinkle.fluff.callbacks.complete, statelem);
 		wikipedia_api.params = params;
 		wikipedia_api.post();
 
@@ -746,15 +713,15 @@ Twinkle.fluff.callbacks = {
 		var edit = response.edit;
 
 		if (edit.captcha) {
-			apiobj.statelem.error('Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.');
+			apiobj.statelem.error('サーバーがCAPTCHAを入力するように要求したため、差し戻せませんでした。');
 		} else if (edit.nochange) {
-			apiobj.statelem.error('Revision we are reverting to is identical to current revision, stopping revert.');
+			apiobj.statelem.error('差し戻し先の版は、現在の版の内容と同じです。');
 		} else {
 			apiobj.statelem.info('done');
 			var params = apiobj.params;
 
 			if (params.notifyUser && !params.userHidden) { // notifyUser only from main, not from toRevision
-				Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
+				Morebits.status.info('Info', [ '利用者:', Morebits.htmlNode('strong', params.user), 'の会話ページ編集フォームを開きます' ]);
 
 				var url = mw.util.getUrl('User talk:' + params.user, {
 					action: 'edit',
@@ -827,7 +794,7 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, customString) {
 			var contribsLink = '[[Special:Contributions/' + userName + '|' + userName + ']]';
 			var contribsLen = unescape(encodeURIComponent(contribsLink)).length;
 			if (resultLen + contribsLen <= 499) {
-				var talkLink = ' ([[User talk:' + userName + '|talk]])';
+				var talkLink = ' ([[User talk:' + userName + '|トーク]])';
 				if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 499) {
 					result = Morebits.string.safeReplace(result, '$USER', contribsLink + talkLink);
 				} else {

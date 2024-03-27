@@ -16,18 +16,18 @@ Twinkle.diff = function twinklediff() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
 		return;
 	}
-	Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: 'prev'}), 'Last', 'tw-lastdiff', 'Show most recent diff');
+	Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: 'prev'}), 'Last', 'tw-lastdiff', '最新版の差分を表示');
 
 	// Show additional tabs only on diff pages
 	if (mw.config.get('wgDiffNewId')) {
 		Twinkle.addPortletLink(function() {
 			Twinkle.diff.evaluate(false);
-		}, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user');
+		}, 'Since', 'tw-since', '最新版とこの利用者による最後の版との差分を表示');
 		Twinkle.addPortletLink(function() {
 			Twinkle.diff.evaluate(true);
-		}, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision');
+		}, 'Since mine', 'tw-sincemine', '最新版と自分による最後の版との差分を表示');
 
-		Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: mw.config.get('wgDiffNewId')}), 'Current', 'tw-curdiff', 'Show difference to current revision');
+		Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: mw.config.get('wgDiffNewId')}), 'Current', 'tw-curdiff', '最新版との差分を表示');
 	}
 };
 
@@ -55,7 +55,7 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		format: 'json'
 	};
 	Morebits.status.init(document.getElementById('mw-content-text'));
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
+	var wikipedia_api = new Morebits.wiki.api('初版投稿者のデータを取得', query, Twinkle.diff.callbacks.main);
 	wikipedia_api.params = { user: user };
 	wikipedia_api.post();
 };
@@ -67,6 +67,7 @@ Twinkle.diff.callbacks = {
 
 		if (!revid) {
 			self.statelem.error('no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.');
+			self.statelem.error('適切な過去版が見つからないか、' + self.params.user + 'が唯一の投稿者です。中止します。');
 			return;
 		}
 		window.location = mw.util.getUrl(mw.config.get('wgPageName'), {
