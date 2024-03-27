@@ -64,16 +64,17 @@ Twinkle.defaultConfig = {
 
 	// Fluff (revert and rollback)
 	autoMenuAfterRollback: false,
-	openTalkPage: [ 'agf', 'norm', 'vand' ],
+	openTalkPage: [ 'norm', 'vand' ],
 	openTalkPageOnAutoRevert: false,
 	rollbackInPlace: false,
 	markRevertedPagesAsMinor: [ 'vand' ],
-	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
+	watchRevertedPages: [ 'norm', 'vand', 'torev' ],
 	watchRevertedExpiry: '1 month',
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	confirmOnMobileFluff: true,
 	showRollbackLinks: [ 'diff', 'others' ],
+	SummaryOnVandalRevert: '差し戻し',
 
 	// DI (twinkleimage)
 	notifyUserOnDeli: true,
@@ -323,7 +324,7 @@ $.ajax({
 	dataType: 'text'
 })
 	.fail(function () {
-		mw.notify('Could not load your Twinkle preferences, resorting to default preferences');
+		mw.notify('Twinkleの個人設定が読み込めなかったため、デフォルトの個人設定になっています');
 	})
 	.done(function (optionsText) {
 
@@ -352,7 +353,7 @@ $.ajax({
 				Twinkle.prefs.optionsVersion = Twinkle.prefs.optionsVersion || 1;
 			}
 		} catch (e) {
-			mw.notify('Could not parse your Twinkle preferences', {type: 'error'});
+			mw.notify('Twinkleの設定を解析できませんでした', {type: 'error'});
 		}
 	})
 	.always(function () {
@@ -411,7 +412,7 @@ Twinkle.load = function () {
 	// If using a skin with space for lots of modules, display a link to Twinkle Preferences
 	var usingSkinWithDropDownMenu = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022' || mw.config.get('skin') === 'timeless';
 	if (usingSkinWithDropDownMenu) {
-		Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
+		Twinkle.addPortletLink(mw.util.getUrl('User:Syunsyunminmin/Twinkle/Preferences'), 'Config', 'tw-config', 'Twinkleの設定ページを開く');
 	}
 };
 
