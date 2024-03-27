@@ -383,7 +383,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('以前のリビジョンのデータを取得', query, Twinkle.fluff.callbacks.main);
+	var wikipedia_api = new Morebits.wiki.api('以前の版のデータを取得', query, Twinkle.fluff.callbacks.main);
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
@@ -437,7 +437,7 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 
-		var summary = Twinkle.fluff.formatSummary('$USER による ID:' + revertToRevID + 'の版を復元',
+		var summary = Twinkle.fluff.formatSummary('$USERさんによる ID:' + revertToRevID + 'の版を復元',
 			revertToUserHidden ? null : revertToUser, optional_summary);
 
 		var query = {
@@ -520,10 +520,10 @@ Twinkle.fluff.callbacks = {
 					case 'vand':
 						var diffUser = lastuser !== params.user;
 						Morebits.status.info('Info', [ '最新版' + (diffUser ? 'は同じ/64サブネット上の' : 'も'), Morebits.htmlNode('strong', userNorm),
-							'による編集です。破壊行為とみなして、差し戻しを進めます。' ]);
+							'さんによる編集です。破壊行為とみなして、差し戻しを進めます。' ]);
 						break;
 					default:
-						Morebits.status.warn('Notice', [ '最新版は ', Morebits.htmlNode('strong', userNorm), ' によるものですが、差し戻しを停止します。' ]);
+						Morebits.status.warn('Notice', [ '最新版は', Morebits.htmlNode('strong', userNorm), 'さんによるものですが、差し戻しを停止します。' ]);
 						return;
 				}
 			} else if (params.type === 'vand' &&
@@ -534,7 +534,7 @@ Twinkle.fluff.callbacks = {
 				Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
 				index = 2;
 			} else {
-				Morebits.status.error('Error', [ '最新版は ', Morebits.htmlNode('strong', lastuser), ' によるものであるため既に差し戻されたかもしれません。差し戻しを停止します。']);
+				Morebits.status.error('Error', [ '最新版は', Morebits.htmlNode('strong', lastuser), 'さんによるものであるため既に差し戻されたかもしれません。差し戻しを停止します。']);
 				return;
 			}
 
@@ -591,7 +591,7 @@ Twinkle.fluff.callbacks = {
 
 		if (!found) {
 			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or they have made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
-			statelem.error([ '以前の版が見つかりませんでした。もしかすると', Morebits.htmlNode('strong', userNorm), 'が唯一の投稿者であるか、' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + '回以上の編集を連続して行ったかもしれません。' ]);
+			statelem.error([ '以前の版が見つかりませんでした。もしかすると', Morebits.htmlNode('strong', userNorm), 'さんが唯一の投稿者であるか、' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + '回以上の編集を連続して行ったかもしれません。' ]);
 			return;
 		}
 
@@ -603,7 +603,7 @@ Twinkle.fluff.callbacks = {
 		var good_revision = revs[found];
 		var userHasAlreadyConfirmedAction = false;
 		if (params.type !== 'vand' && count > 1) {
-			if (!confirm(userNorm + ' は' + mw.language.convertNumber(count) + '回以上の編集を連続して行いました。本当にすべて差し戻しますか？')) {
+			if (!confirm(userNorm + 'さんは' + mw.language.convertNumber(count) + '回以上の編集を連続して行いました。本当にすべて差し戻しますか？')) {
 				Morebits.status.info('Notice', '差し戻しを中止');
 				return;
 			}
@@ -636,7 +636,7 @@ Twinkle.fluff.callbacks = {
 					userHasAlreadyConfirmedAction = true;
 				}
 
-				summary = Twinkle.fluff.formatSummary('$USER による' + params.count + '版を差し戻し',
+				summary = Twinkle.fluff.formatSummary('$USERさんによる' + params.count + '版を差し戻し',
 					params.userHidden ? null : params.user, extra_summary);
 				break;
 		}
