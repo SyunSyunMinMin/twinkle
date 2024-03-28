@@ -458,7 +458,7 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Speedy deletion (CSD)',
+		title: '即時削除 (CSD)',
 		module: 'speedy',
 		preferences: [
 			{
