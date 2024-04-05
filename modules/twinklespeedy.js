@@ -96,7 +96,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						label: 'トークページも削除',
 						value: 'talkpage',
 						name: 'talkpage',
-						tooltip: "This option deletes the page's talk page in addition. If you choose the F8 (moved to Commons) criterion, this option is ignored and the talk page is *not* deleted.",
+						tooltip: 'このオプションはこのページのトークページも削除します。日本語版には対応する方針がないため基本的にはチェックしないでください。',
 						checked: Twinkle.getPref('deleteTalkPageOnDelete'),
 						event: function(event) {
 							event.stopPropagation();
@@ -112,7 +112,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					label: 'リダイレクトも削除',
 					value: 'redirects',
 					name: 'redirects',
-					tooltip: 'This option deletes all incoming redirects in addition. Avoid this option for procedural (e.g. move/merge) deletions.',
+					tooltip: 'このオプションはこのページへのすべてのリダイレクトも削除します。転送先を変更できるかもしれないリダイレクトも削除してしまう可能性があります。',
 					checked: Twinkle.getPref('deleteRedirectsOnDelete'),
 					event: function (event) {
 						event.stopPropagation();
