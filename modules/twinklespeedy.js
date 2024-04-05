@@ -71,14 +71,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						}
 						// enable redirects checkbox
 						cForm.redirects.checked = !cChecked;
-						// enable delete multiple
-						cForm.delmultiple.checked = false;
-						// enable notify checkbox
-						cForm.notify.checked = cChecked;
-						// enable deletion notification checkbox
-						cForm.warnusertalk.checked = !cChecked && !Twinkle.speedy.hasCSD;
-						// enable multiple
-						cForm.multiple.checked = false;
 
 						Twinkle.speedy.callback.modeChanged(cForm);
 
@@ -125,27 +117,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					event: function (event) {
 						event.stopPropagation();
 					}
-				},
-				{
-					label: 'Delete under multiple criteria',
-					value: 'delmultiple',
-					name: 'delmultiple',
-					tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
-					event: function(event) {
-						Twinkle.speedy.callback.modeChanged(event.target.form);
-						event.stopPropagation();
-					}
-				},
-				{
-					label: 'ページの削除を初版立項者に通知する',
-					value: 'warnusertalk',
-					name: 'warnusertalk',
-					tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
-						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
-					checked: !Twinkle.speedy.hasCSD,
-					event: function(event) {
-						event.stopPropagation();
-					}
 				}
 			]
 		});
@@ -166,26 +137,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	tagOptions.append({
 		type: 'checkbox',
 		list: [
-			{
-				label: '可能であれば初版立項者に通知する',
-				value: 'notify',
-				name: 'notify',
-				tooltip: '選択した基準に対して個人設定で有効になっており、またこのボックスがチェックされている場合、通知テンプレートが作成者の会話ページに追加されます。',
-				checked: !Morebits.userIsSysop || !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
-				event: function(event) {
-					event.stopPropagation();
-				}
-			},
-			{
-				label: 'Tag with multiple criteria',
-				value: 'multiple',
-				name: 'multiple',
-				tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
-				event: function(event) {
-					Twinkle.speedy.callback.modeChanged(event.target.form);
-					event.stopPropagation();
-				}
-			},
 			{
 				label: 'ベージを白紙化する',
 				value: 'blankpage',
@@ -255,7 +206,6 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	// first figure out what mode we're in
 	var mode = {
 		isSysop: !!form.tag_only && !form.tag_only.checked,
-		isMultiple: form.tag_only && !form.tag_only.checked ? form.delmultiple.checked : form.multiple.checked,
 		isRadioClick: Twinkle.getPref('speedySelectionStyle') === 'radioClick'
 	};
 
@@ -274,30 +224,12 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		name: 'work_area'
 	});
 
-	if (mode.isMultiple && mode.isRadioClick) {
-		var evaluateType = mode.isSysop ? 'evaluateSysop' : 'evaluateUser';
-
-		work_area.append({
-			type: 'div',
-			label: '基準を選択し終わったら、クリック:'
-		});
-		work_area.append({
-			type: 'button',
-			name: 'submit-multiple',
-			label: mode.isSysop ? 'ページを削除' : 'ページにタグ付け',
-			event: function(event) {
-				Twinkle.speedy.callback[evaluateType](event);
-				event.stopPropagation();
-			}
-		});
-	}
-
 	var appendList = function(headerLabel, csdList) {
 		work_area.append({ type: 'header', label: headerLabel });
-		work_area.append({ type: mode.isMultiple ? 'checkbox' : 'radio', name: 'csd', list: Twinkle.speedy.generateCsdList(csdList, mode) });
+		work_area.append({ type: 'radio', name: 'csd', list: Twinkle.speedy.generateCsdList(csdList, mode) });
 	};
 
-	if (mode.isSysop && !mode.isMultiple) {
+	if (mode.isSysop) {
 		appendList('その他の基準', Twinkle.speedy.customRationale);
 	}
 
@@ -416,22 +348,6 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	return $.map(list, function(critElement) {
 		var criterion = $.extend({}, critElement);
 
-		if (mode.isMultiple) {
-			if (criterion.hideWhenMultiple) {
-				return null;
-			}
-			if (criterion.hideSubgroupWhenMultiple) {
-				criterion.subgroup = null;
-			}
-		} else {
-			if (criterion.hideWhenSingle) {
-				return null;
-			}
-			if (criterion.hideSubgroupWhenSingle) {
-				criterion.subgroup = null;
-			}
-		}
-
 		if (mode.isSysop) {
 			if (criterion.hideWhenSysop) {
 				return null;
@@ -459,7 +375,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			return null;
 		}
 
-		if (criterion.subgroup && !mode.isMultiple && mode.isRadioClick) {
+		if (criterion.subgroup && mode.isRadioClick) {
 			if (Array.isArray(criterion.subgroup)) {
 				criterion.subgroup = criterion.subgroup.concat({
 					type: 'button',
@@ -494,7 +410,7 @@ Twinkle.speedy.customRationale = [
 		subgroup: {
 			name: 'reason_1',
 			type: 'input',
-			label: '即時削除の方針に合致していることの説明:',
+			label: Morebits.userIsSysop ? 'その他の理由:' : '即時削除の方針に合致していることの説明:',
 			size: 60
 		}
 	}
@@ -867,35 +783,16 @@ Twinkle.speedy.normalizeHash = {
 Twinkle.speedy.callbacks = {
 	getTemplateCodeAndParams: function(params) {
 		var code, parameters, i;
-		if (params.normalizeds.length > 1) {
-			code = '{{db-multiple';
-			params.utparams = {};
-			$.each(params.normalizeds, function(index, norm) {
-				code += '|' + norm.toUpperCase();
-				parameters = params.templateParams[index] || [];
-				for (var i in parameters) {
-					if (typeof parameters[i] === 'string' && !parseInt(i, 10)) {  // skip numeric parameters - {{db-multiple}} doesn't understand them
-						code += '|' + i + '=' + parameters[i];
-					}
-				}
-				$.extend(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
-			});
-			code += '}}';
-		} else {
-			parameters = params.templateParams[0] || [];
-			code = '{{即時削除|1=' + params.values[0];
-			for (i in parameters) {
-				if (typeof parameters[i] === 'string') {
-					code += '|' + i + '=' + parameters[i];
-				}
+		parameters = params.templateParams[0] || [];
+		code = '{{即時削除|1=' + params.values[0];
+		for (i in parameters) {
+			if (typeof parameters[i] === 'string') {
+				code += '|' + i + '=' + parameters[i];
 			}
-			code += '}}';
-			params.utparams = Twinkle.speedy.getUserTalkParameters(params.normalizeds[0], parameters);
 		}
-		console.log(code);
-		console.log(params.utparams);
+		code += '}}';
 
-		return [code, params.utparams];
+		return code;
 	},
 
 	parseWikitext: function(wikitext, callback) {
@@ -910,120 +807,42 @@ Twinkle.speedy.callbacks = {
 			format: 'json'
 		};
 
-		var statusIndicator = new Morebits.status('Building deletion summary');
-		var api = new Morebits.wiki.api('Parsing deletion template', query, function(apiobj) {
+		var statusIndicator = new Morebits.status('削除要約の生成');
+		var api = new Morebits.wiki.api('即時削除テンプレートの構文解析', query, function(apiobj) {
 			var reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason').text()).replace(/\+/g, ' ');
 			if (!reason) {
-				statusIndicator.warn('Unable to generate summary from deletion template');
+				statusIndicator.warn('削除テンプレートから要約を生成できませんでした');
 			} else {
-				statusIndicator.info('complete');
+				statusIndicator.info('完了');
 			}
 			callback(reason);
 		}, statusIndicator);
 		api.post();
 	},
 
-	noteToCreator: function(pageobj) {
-		var params = pageobj.getCallbackParameters();
-		var initialContrib = pageobj.getCreator();
-
-		// disallow notifying yourself
-		if (initialContrib === mw.config.get('wgUserName')) {
-			Morebits.status.warn('あなた (' + initialContrib + ') がこのページを作成しました; skipping user notification');
-			initialContrib = null;
-
-		// don't notify users when their user talk page is nominated/deleted
-		} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
-			Morebits.status.warn('Notifying initial contributor: this user created their own user talk page; skipping notification');
-			initialContrib = null;
-
-		// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
-		} else if ((initialContrib === 'Cyberbot I' || initialContrib === 'SoxBot') && params.normalizeds[0] === 'f2') {
-			Morebits.status.warn('Notifying initial contributor: page created procedurally by bot; skipping notification');
-			initialContrib = null;
-
-		// Check for already existing tags
-		} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
-			Morebits.status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
-			initialContrib = null;
-		}
-
-		if (initialContrib) {
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')'),
-				notifytext, i, editsummary;
-
-			// special cases: "db" and "db-multiple"
-			if (params.normalizeds.length > 1) {
-				notifytext = '\n{{subst:db-' + (params.warnUser ? 'deleted' : 'notice') + '-multiple|1=' + Morebits.pageNameNorm;
-				var count = 2;
-				$.each(params.normalizeds, function(index, norm) {
-					notifytext += '|' + count++ + '=' + norm.toUpperCase();
-				});
-			} else if (params.normalizeds[0] === 'db') {
-				notifytext = '\n{{subst:db-reason-' + (params.warnUser ? 'deleted' : 'notice') + '|1=' + Morebits.pageNameNorm;
-			} else {
-				notifytext = '\n{{subst:db-csd-' + (params.warnUser ? 'deleted' : 'notice') + '-custom|1=' + Morebits.pageNameNorm + '|2=' + params.values[0];
-			}
-
-			for (i in params.utparams) {
-				if (typeof params.utparams[i] === 'string') {
-					notifytext += '|' + i + '=' + params.utparams[i];
-				}
-			}
-			notifytext += (params.welcomeuser ? '' : '|nowelcome=yes') + '}} ~~~~';
-
-			editsummary = '通知: ページ';
-			if (!params.notsavelog) {  // ログに残さない設定の場合、通知時もページ名は記載しない。
-				editsummary += ' [[:' + Morebits.pageNameNorm + ']] ';
-			}
-			editsummary += 'の即時削除' + (params.warnUser ? '' : 'への指定');
-
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary(editsummary);
-			usertalkpage.setChangeTags(Twinkle.changeTags);
-			usertalkpage.setCreateOption('recreate');
-			usertalkpage.setWatchlist(Twinkle.getPref('watchSpeedyUser'));
-			usertalkpage.setFollowRedirect(true, false);
-			usertalkpage.append(function onNotifySuccess() {
-				// add this nomination to the user's userspace log, if the user has enabled it
-				if (params.lognomination) {
-					Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
-				}
-			}, function onNotifyError() {
-				// if user could not be notified, log nomination without mentioning that notification was sent
-				if (params.lognomination) {
-					Twinkle.speedy.callbacks.user.addToLog(params, null);
-				}
-			});
-		} else if (params.lognomination) {
-			// log nomination even if the user notification wasn't sent
-			Twinkle.speedy.callbacks.user.addToLog(params, null);
-		}
-	},
-
 	sysop: {
 		main: function(params) {
 			var reason;
-			if (!params.normalizeds.length && params.normalizeds[0] === 'db') {
-				reason = prompt('Enter the deletion summary to use, which will be entered into the deletion log:', '');
+			if (params.normalizeds[0] === 'db') {
+				reason = prompt('削除記録に入力される削除要約を入力してください:', '');
 				Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
 			} else {
-				var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params)[0];
+				var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params);
 				Twinkle.speedy.callbacks.parseWikitext(code, function(reason) {
 					if (params.promptForSummary) {
-						reason = prompt('Enter the deletion summary to use, or press OK to accept the automatically generated one.', reason);
+						reason = prompt('使用する削除要約を入力するか、またはOKを押して自動的に生成される要約を使用します。', reason);
 					}
 					Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
 				});
 			}
 		},
 		deletePage: function(reason, params) {
-			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Deleting page');
+			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'ページを削除');
 
 			if (reason === null) {
-				return Morebits.status.error('Asking for reason', 'User cancelled');
+				return Morebits.status.error('理由を尋ねる', '中止');
 			} else if (!reason || !reason.replace(/^\s*/, '').replace(/\s*$/, '')) {
-				return Morebits.status.error('Asking for reason', "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
+				return Morebits.status.error('理由を尋ねる', 'あなたは何も言わなかった。分からないよ...管理者とその無気力な態度は... 降参だ...');
 			}
 
 			var deleteMain = function(callback) {
@@ -1031,24 +850,13 @@ Twinkle.speedy.callbacks = {
 				thispage.setChangeTags(Twinkle.changeTags);
 				thispage.setWatchlist(params.watch);
 				thispage.deletePage(function() {
-					thispage.getStatusElement().info('done');
+					thispage.getStatusElement().info('完了');
 					typeof callback === 'function' && callback();
 					Twinkle.speedy.callbacks.sysop.deleteTalk(params);
 				});
 			};
 
-			// look up initial contributor. If prompting user for deletion reason, just display a link.
-			// Otherwise open the talk page directly
-			if (params.warnUser) {
-				thispage.setCallbackParameters(params);
-				thispage.lookupCreation(function(pageobj) {
-					deleteMain(function() {
-						Twinkle.speedy.callbacks.noteToCreator(pageobj);
-					});
-				});
-			} else {
-				deleteMain();
-			}
+			deleteMain();
 		},
 		deleteTalk: function(params) {
 			// delete talk page
@@ -1078,43 +886,43 @@ Twinkle.speedy.callbacks = {
 					rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 					format: 'json'
 				};
-				var wikipedia_api = new Morebits.wiki.api('getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
-					new Morebits.status('Deleting redirects'));
+				var wikipedia_api = new Morebits.wiki.api('リダイレクトの一覧を取得...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
+					new Morebits.status('リダイレクトの削除'));
 				wikipedia_api.params = params;
 				wikipedia_api.post();
 			}
 
 			// promote Unlink tool
 			var $link, $bigtext;
-			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
+			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f7') {
 				$link = $('<a/>', {
 					href: '#',
-					text: 'click here to go to the Unlink tool',
+					text: 'クリックしてリンク解除ツールへ進む',
 					css: { fontSize: '130%', fontWeight: 'bold' },
 					click: function() {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
-						Twinkle.unlink.callback('Removing usages of and/or links to deleted file ' + Morebits.pageNameNorm);
+						Twinkle.unlink.callback('削除されたファイルの使用やリンクの除去 ' + Morebits.pageNameNorm);
 					}
 				});
 				$bigtext = $('<span/>', {
-					text: 'To orphan backlinks and remove instances of file usage',
+					text: 'バックリンクを無効にし、ファイルの使用箇所を除去する。',
 					css: { fontSize: '130%', fontWeight: 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
-			} else if (params.normalized !== 'f8') {
+			} else if (params.normalized !== 'f7') {
 				$link = $('<a/>', {
 					href: '#',
-					text: 'click here to go to the Unlink tool',
+					text: 'クリックしてリンク解除ツールへ進む',
 					css: { fontSize: '130%', fontWeight: 'bold' },
 					click: function() {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
-						Twinkle.unlink.callback('Removing links to deleted page ' + Morebits.pageNameNorm);
+						Twinkle.unlink.callback('削除された ' + Morebits.pageNameNorm + ' へのリンクの削除 ');
 					}
 				});
 				$bigtext = $('<span/>', {
-					text: 'To orphan backlinks',
+					text: 'バックリンクを無効にする',
 					css: { fontSize: '130%', fontWeight: 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
@@ -1127,7 +935,7 @@ Twinkle.speedy.callbacks = {
 			var statusIndicator = apiobj.statelem;
 
 			if (!total) {
-				statusIndicator.status('no redirects found');
+				statusIndicator.status('リダイレクトが見つかりませんでした');
 				return;
 			}
 
@@ -1139,7 +947,7 @@ Twinkle.speedy.callbacks = {
 				statusIndicator.update(now);
 				apiobjInner.statelem.unlink();
 				if (current >= total) {
-					statusIndicator.info(now + ' (completed)');
+					statusIndicator.info(now + ' (完了)');
 					Morebits.wiki.removeCheckpoint();
 				}
 			};
@@ -1148,7 +956,7 @@ Twinkle.speedy.callbacks = {
 
 			snapshot.forEach(function(value) {
 				var title = value.title;
-				var page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
+				var page = new Morebits.wiki.page(title, 'リダイレクト "' + title + '" の削除');
 				page.setEditSummary('[[WP:CSD#R1-3|R1-3]]: 転送先がないリダイレクト 転送先: [["' + Morebits.pageNameNorm + ']]"');
 				page.setChangeTags(Twinkle.changeTags);
 				page.deletePage(onsuccess);
@@ -1167,11 +975,9 @@ Twinkle.speedy.callbacks = {
 
 			var params = pageobj.getCallbackParameters();
 
-			// given the params, builds the template and also adds the user talk page parameters to the params that were passed in
-			// returns => [<string> wikitext, <object> utparams]
-			var buildData = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params),
-				code = buildData[0];
-			params.utparams = buildData[1];
+			// given the params, builds the template parameters to the params that were passed in
+			// returns => <string> wikitext
+			var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params);
 
 			// Tag if possible, post on talk if not
 			if (pageobj.canEdit() && ['wikitext', 'Scribunto', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
@@ -1223,15 +1029,8 @@ Twinkle.speedy.callbacks = {
 
 				// Generate edit summary for edit
 				var editsummary;
-				if (params.normalizeds.length > 1) {
-					editsummary = 'Requesting speedy deletion (';
-					$.each(params.normalizeds, function(index, norm) {
-						editsummary += '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']], ';
-					});
-					editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
-					editsummary += ').';
-				} else if (params.normalizeds[0] === 'db') {
-					editsummary = '"' + params.templateParams[0]['1'] + '"として[[WP:CSD|即時削除]]を依頼';
+				if (params.normalizeds[0] === 'db') {
+					editsummary = '"' + params.templateParams[0]['2'] + '"として[[WP:CSD|即時削除]]を依頼';
 				} else {
 					editsummary = '即時削除を依頼 ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']])';
 				}
@@ -1245,13 +1044,10 @@ Twinkle.speedy.callbacks = {
 					text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
 				}
 
-				console.log(text);
-				console.log(editsummary);
-
 				pageobj.setPageText(text);
 				pageobj.setEditSummary(editsummary);
 				pageobj.setWatchlist(params.watch);
-				//pageobj.save(Twinkle.speedy.callbacks.user.tagComplete); //一時的にコメントアウト
+				pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
 			} else { // Attempt to place on talk page
 				var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
 				if (talkName !== pageobj.getPageName()) {
@@ -1259,7 +1055,6 @@ Twinkle.speedy.callbacks = {
 
 					var talk_page = new Morebits.wiki.page(talkName, 'トークページにタグを自動配置');
 					talk_page.setNewSectionTitle(pageobj.getPageName() + 'の即時削除依頼');
-					talk_page.setNewSectionText(code + '\n\nI was unable to tag ' + pageobj.getPageName() + ' so please delete it. ~~~~');
 					talk_page.setNewSectionText(code + '\n\n' + pageobj.getPageName() + 'にタグ付けすることができませんでした。削除してください。--~~~~');
 					talk_page.setCreateOption('recreate');
 					talk_page.setFollowRedirect(true);
@@ -1275,19 +1070,13 @@ Twinkle.speedy.callbacks = {
 
 		tagComplete: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
-
-			// Notification to first contributor, will also log nomination to the user's userspace log
-			if (params.usertalk) {
-				var thispage = new Morebits.wiki.page(Morebits.pageNameNorm);
-				thispage.setCallbackParameters(params);
-				thispage.lookupCreation(Twinkle.speedy.callbacks.noteToCreator);
-			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else if (params.lognomination) {
-				Twinkle.speedy.callbacks.user.addToLog(params, null);
+			// Add this nomination to the user's userspace log
+			if (params.lognomination) {
+				Twinkle.speedy.callbacks.user.addToLog(params);
 			}
 		},
 
-		addToLog: function(params, initialContrib) {
+		addToLog: function(params) {
 			var usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
 			usl.initialText =
 			'{{Notice|style=announce|text=即時削除の際、このページへのリンクは考慮する必要はありません。}}\n' +
@@ -1319,14 +1108,7 @@ Twinkle.speedy.callbacks = {
 			var editsummary = '[[:' + Morebits.pageNameNorm + ']]の即時削除への指定を記録';
 			var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ': ';
 
-			if (params.normalizeds.length > 1) {
-				appendText += 'multiple criteria (';
-				$.each(params.normalizeds, function(index, norm) {
-					appendText += '[[WP:CSD#' + norm.toUpperCase() + '|' + norm.toUpperCase() + ']], ';
-				});
-				appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
-				appendText += ')';
-			} else if (params.normalizeds[0] === 'db') {
+			if (params.normalizeds[0] === 'db') {
 				appendText += '{{tlp|即時削除|その他}}';
 			} else {
 				appendText += '[[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']] ({{tlp|即時削除|' + params.values[0] + '}})';
@@ -1358,9 +1140,6 @@ Twinkle.speedy.callbacks = {
 			}
 			if (extraInfo) {
 				appendText += '; 追加情報:' + extraInfo;
-			}
-			if (initialContrib) {
-				appendText += '; notified {{user|1=' + initialContrib + '}}';
 			}
 			appendText += ' ~~~~~\n';
 
@@ -1589,53 +1368,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 	return parameters;
 };
 
-// Function for processing talk page notification template parameters
-// key1/value1: for {{db-criterion-[notice|deleted]}} (via {{db-csd-[notice|deleted]-custom}})
-// utparams.param: for {{db-[notice|deleted]-multiple}}
-Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters) {
-	var utparams = [];
-
-	// Special cases
-	if (normalized === 'db') {
-		utparams['2'] = parameters['1'];
-	} else if (normalized === 'g12') {
-		['url', 'url2', 'url3'].forEach(function(item, idx) {
-			if (parameters[item]) {
-				idx++;
-				utparams['key' + idx] = item;
-				utparams['value' + idx] = utparams[item] = parameters[item];
-			}
-		});
-	} else if (normalized === 'g5-r') {
-		['url', 'url2', 'url3'].forEach(function(item, idx) {
-			if (parameters[item]) {
-				idx++;
-				utparams['key' + idx] = item;
-				utparams['value' + idx] = utparams[item] = parameters[item];
-			}
-		});
-	} else {
-		// Handle the rest
-		var param;
-		switch (normalized) {
-			case 'g4':
-				param = 'xfd';
-				break;
-			case 'f9':
-				param = 'url';
-				break;
-			default:
-				break;
-		}
-		// No harm in providing a usertalk template with the others' parameters
-		if (param && parameters[param]) {
-			utparams.key1 = param;
-			utparams.value1 = utparams[param] = parameters[param];
-		}
-	}
-	return utparams;
-};
-
 /**
  * @param {Event} e
  * @returns {Array}
@@ -1676,7 +1408,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		return Twinkle.speedy.normalizeHash[value];
 	});
 
-	// analyse each criterion to determine whether to watch the page, prompt for summary, or notify the creator
+	// analyse each criterion to determine whether to watch the page, or prompt for summary
 	var watchPage, promptForSummary;
 	normalizeds.forEach(function(norm) {
 		if (Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1) {
@@ -1687,13 +1419,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		}
 	});
 
-	var warnusertalk = form.warnusertalk.checked && normalizeds.some(function (norm) {
-		return Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1;
-	});
-
-	var welcomeuser = warnusertalk && normalizeds.some(function (norm) {
-		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
-	});
+	var notsavelog = form.notsavelog.checked;
 
 	var params = {
 		values: values,
@@ -1701,10 +1427,9 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		watch: watchPage,
 		deleteTalkPage: form.talkpage && form.talkpage.checked,
 		deleteRedirects: form.redirects.checked,
-		warnUser: warnusertalk,
-		welcomeuser: welcomeuser,
 		promptForSummary: promptForSummary,
-		templateParams: templateParams
+		templateParams: templateParams,
+		notsavelog: notsavelog
 	};
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
@@ -1730,23 +1455,15 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		return;
 	}
 
-	// var multiple = form.multiple.checked;
-
 	var normalizeds = values.map(function(value) {
 		return Twinkle.speedy.normalizeHash[value];
 	});
 
-	// analyse each criterion to determine whether to watch the page/notify the creator
+	// analyse each criterion to determine whether to watch the page the creator
 	var watchPage = normalizeds.some(function(csdCriteria) {
 		return Twinkle.getPref('watchSpeedyPages').indexOf(csdCriteria) !== -1;
 	}) && Twinkle.getPref('watchSpeedyExpiry');
 
-	var notifyuser = form.notify.checked && normalizeds.some(function(norm) {
-		return Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1;
-	});
-	var welcomeuser = notifyuser && normalizeds.some(function(norm) {
-		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
-	});
 	var csdlog = !form.notsavelog.checked && Twinkle.getPref('logSpeedyNominations') && normalizeds.some(function(norm) {
 		return Twinkle.getPref('noLogOnSpeedyNomination').indexOf(norm) === -1;
 	});
@@ -1757,14 +1474,11 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		values: values,
 		normalizeds: normalizeds,
 		watch: watchPage,
-		usertalk: notifyuser,
-		welcomeuser: welcomeuser,
 		lognomination: csdlog,
 		templateParams: templateParams,
 		blankpage: blankpage,
 		notsavelog: notsavelog
 	};
-	console.log(params);
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);

@@ -463,16 +463,16 @@ Twinkle.config.sections = [
 		preferences: [
 			{
 				name: 'speedySelectionStyle',
-				label: 'When to go ahead and tag/delete the page',
+				label: 'ページをタグ付け／削除するタイミング',
 				type: 'enum',
-				enumValues: { buttonClick: 'When I click "Submit"', radioClick: 'As soon as I click an option' }
+				enumValues: { buttonClick: '送信ボタンをクリックしたとき', radioClick: 'オプションをクリックするとすぐ' }
 			},
 
 			// TwinkleConfig.watchSpeedyPages (array)
 			// Whether to add speedy tagged or deleted pages to watchlist
 			{
 				name: 'watchSpeedyPages',
-				label: 'Add page to watchlist when using these criteria',
+				label: 'これらの基準を使用する場合は、ウォッチリストにページを追加する',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteria,
 				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -481,7 +481,7 @@ Twinkle.config.sections = [
 			// If any of the above items are selected, whether to expire the watch
 			{
 				name: 'watchSpeedyExpiry',
-				label: 'When tagging a page, how long to watch it for',
+				label: 'ページをタグ付けする場合、それをウォッチする期間',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -490,59 +490,15 @@ Twinkle.config.sections = [
 			// If, when applying speedy template to page, to mark the page as triaged/patrolled (if the page was reached from NewPages)
 			{
 				name: 'markSpeedyPagesAsPatrolled',
-				label: 'Mark page as patrolled/reviewed when tagging (if possible)',
-				helptip: 'This should probably not be checked as doing so is against best practice consensus',
+				label: 'タグ付けの際、ページを巡回済みとしてマークする。（可能な場合）',
+				helptip: 'これは最善の慣行に反するおそれがあるので、おそらくチェックすべきではないです。',
 				type: 'boolean'
-			},
-
-			// TwinkleConfig.watchSpeedyUser (string)
-			// The watchlist setting of the user talk page if they receive a notification.
-			{
-				name: 'watchSpeedyUser',
-				label: 'Add user talk page of initial contributor to watchlist (when notifying)',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-
-			// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
-			// On what types of speedy deletion notifications shall the user be welcomed
-			// with a "firstarticle" notice if their talk page has not yet been created.
-			{
-				name: 'welcomeUserOnSpeedyDeletionNotification',
-				label: 'Welcome page creator when notifying with these criteria',
-				helptip: 'The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{firstarticle}}.',
-				type: 'set',
-				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
-				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
-			},
-
-			// TwinkleConfig.notifyUserOnSpeedyDeletionNomination (array)
-			// What types of actions should result in the author of the page being notified of nomination
-			{
-				name: 'notifyUserOnSpeedyDeletionNomination',
-				label: 'Notify page creator when tagging with these criteria',
-				helptip: 'Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.',
-				type: 'set',
-				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
-				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
-			},
-
-			// TwinkleConfig.warnUserOnSpeedyDelete (array)
-			// What types of actions should result in the author of the page being notified of speedy deletion (admin only)
-			{
-				name: 'warnUserOnSpeedyDelete',
-				label: 'Notify page creator when deleting under these criteria',
-				helptip: 'Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.',
-				adminOnly: true,
-				type: 'set',
-				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
-				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
 			},
 
 			// TwinkleConfig.promptForSpeedyDeletionSummary (array of strings)
 			{
 				name: 'promptForSpeedyDeletionSummary',
-				label: 'Allow editing of deletion summary when deleting under these criteria',
+				label: 'これらの基準で削除する場合、削除要約の編集を行う',
 				adminOnly: true,
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdAndImageDeletionCriteria,
@@ -553,14 +509,14 @@ Twinkle.config.sections = [
 			// If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
 			{
 				name: 'deleteTalkPageOnDelete',
-				label: 'Check the "also delete talk page" box by default',
+				label: '既定で"トークページも削除する"にチェックを入れる',
 				adminOnly: true,
 				type: 'boolean'
 			},
 
 			{
 				name: 'deleteRedirectsOnDelete',
-				label: 'Check the "also delete redirects" box by default',
+				label: '規定で"リダイレクトも削除"にチェックを入れる',
 				adminOnly: true,
 				type: 'boolean'
 			},
@@ -569,8 +525,8 @@ Twinkle.config.sections = [
 			// Make the CSD screen default to "delete" instead of "tag" (admin only)
 			{
 				name: 'deleteSysopDefaultToDelete',
-				label: 'Default to outright deletion instead of speedy tagging',
-				helptip: 'If there is a CSD tag already present, Twinkle will always default to "delete" mode',
+				label: 'タグ付けではなく即時削除を規定で行う',
+				helptip: 'CSDタグが既に存在する場合、Twinkleは常に「削除」モードが既定となります。',
 				adminOnly: true,
 				type: 'boolean'
 			},
@@ -579,7 +535,7 @@ Twinkle.config.sections = [
 			// Defines the width of the Twinkle SD window in pixels
 			{
 				name: 'speedyWindowWidth',
-				label: 'Width of speedy deletion window (pixels)',
+				label: '即時削除ウィンドウの幅（ピクセル）',
 				type: 'integer'
 			},
 
@@ -587,26 +543,26 @@ Twinkle.config.sections = [
 			// Defines the width of the Twinkle SD window in pixels
 			{
 				name: 'speedyWindowHeight',
-				label: 'Height of speedy deletion window (pixels)',
-				helptip: 'If you have a big monitor, you might like to increase this.',
+				label: '即時削除ウィンドウの高さ（ピクセル）',
+				helptip: '大きなモニターをお持ちの場合は、これを増やしてください。',
 				type: 'integer'
 			},
 
 			{
 				name: 'logSpeedyNominations',
-				label: 'Keep a log in userspace of all CSD nominations',
-				helptip: 'Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you nominate for CSD using Twinkle. Files tagged using DI are also added to this log.',
+				label: 'すべてのCSDへの指定記録を利用者ページに保持します',
+				helptip: '管理者以外は削除された投稿にアクセスできないため、利用者ページのログは、Twinkleを使用してCSDに指定したすべてのページを追跡するための優れた方法を提供します。 DIを使用してタグ付けされたファイルもこのログに追加されます。',
 				type: 'boolean'
 			},
 			{
 				name: 'speedyLogPageName',
-				label: 'Keep the CSD userspace log at this user subpage',
-				helptip: 'Enter a subpage name in this box. You will find your CSD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the CSD userspace log.',
+				label: 'この利用者サブページでCSDユーザースペースログを保持します',
+				helptip: 'このボックスにサブページ名を入力します。 CSDログは利用者:' + mw.config.get('wgUserName') + '/"サブページ名"にあります。 CSD利用者ページへの記録をオンにした場合にのみ機能します。',
 				type: 'string'
 			},
 			{
 				name: 'noLogOnSpeedyNomination',
-				label: 'Do not create a userspace log entry when tagging with these criteria',
+				label: 'これらの基準でタグ付けする場合は、利用者サブページの記録項目を作成しない',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdAndImageDeletionCriteria,
 				setDisplayOrder: Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder
