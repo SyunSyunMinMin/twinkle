@@ -2664,6 +2664,8 @@ Morebits.wiki.page = function(pageName, status) {
 		lastEditTime: null,
 		pageID: null,
 		contentModel: null,
+		pageParsed: null,
+		sections: null,
 		revertCurID: null,
 		revertUser: null,
 		watched: false,
@@ -2675,6 +2677,8 @@ Morebits.wiki.page = function(pageName, status) {
 		// callbacks
 		onLoadSuccess: null,
 		onLoadFailure: null,
+		onParseSuccess: null,
+		onParseFailure: null,
 		onSaveSuccess: null,
 		onSaveFailure: null,
 		onLookupCreationSuccess: null,
@@ -2693,6 +2697,7 @@ Morebits.wiki.page = function(pageName, status) {
 		// internal objects
 		loadQuery: null,
 		loadApi: null,
+		parseApi: null,
 		saveApi: null,
 		lookupCreationApi: null,
 		moveApi: null,
@@ -2765,6 +2770,36 @@ Morebits.wiki.page = function(pageName, status) {
 		ctx.loadApi = new Morebits.wiki.api(msg('retrieving-page', 'ページを取得中...'), ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
 		ctx.loadApi.setParent(this);
 		ctx.loadApi.post();
+	};
+
+	/**
+	 * parse the text for the page.
+	 *
+	 * @param {Function} onSuccess - Callback function which is called when the load has succeeded.
+	 * @param {Function} [onFailure] - Callback function which is called when the load fails.
+	 */
+	this.parse = function(onSuccess, onFailure) {
+		ctx.onParseSuccess = onSuccess;
+		ctx.onParseFailure = onFailure || emptyFunction;
+
+		// Need to be able to do something after the page loads
+		if (!onSuccess) {
+			ctx.statusElement.error('Internal error: no onSuccess callback provided to parse()!');
+			ctx.onParseFailure(this);
+			return;
+		}
+
+		var query = {
+			action: 'parse',
+			format: 'json',
+			page: ctx.pageName,
+			prop: 'sections',
+			utf8: 1
+		};
+
+		ctx.parseApi = new Morebits.wiki.api(msg('retrieving-page', 'ページを取得中...'), query, fnParseSuccess, ctx.statusElement, ctx.onParseFailure);
+		ctx.parseApi.setParent(this);
+		ctx.parseApi.post();
 	};
 
 	/**
@@ -2985,6 +3020,11 @@ Morebits.wiki.page = function(pageName, status) {
 	/** @returns {string} The text of the page after a successful load() */
 	this.getPageText = function() {
 		return ctx.pageText;
+	};
+
+	/** @returns {string} Sections of the page after a successful parse() */
+	this.getSections = function() {
+		return ctx.sections;
 	};
 
 	/** @param {string} pageText - Updated page text that will be saved when `save()` is called */
@@ -3916,6 +3956,24 @@ Morebits.wiki.page = function(pageName, status) {
 
 		// alert("Generate edit conflict now");  // for testing edit conflict recovery logic
 		ctx.onLoadSuccess(this);  // invoke callback
+	};
+
+	// callback from parseApi.post()
+	var fnParseSuccess = function() {
+
+		if (ctx.parseApi.getResponse().error) {
+			ctx.statusElement.error('ページの取得に失敗しました。');
+			ctx.onLoadFailure(this);
+			return;
+		}
+		var response = ctx.parseApi.getResponse().parse;
+
+		ctx.pageParsed = true;
+		ctx.sections = response.sections;
+
+		// alert("Generate edit conflict now");  // for testing edit conflict recovery logic
+		ctx.onParseSuccess(this);  // invoke callback
+
 	};
 
 	// helper function to parse the page name returned from the API

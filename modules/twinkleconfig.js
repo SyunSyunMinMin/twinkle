@@ -266,25 +266,25 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Page protection ' + (Morebits.userIsSysop ? '(PP)' : '(RPP)'),
+		title: 'ページの保護 ' + (Morebits.userIsSysop ? '(PP)' : '(RPP)'),
 		module: 'protect',
 		preferences: [
 			{
 				name: 'watchRequestedPages',
-				label: 'Add page to watchlist when requesting protection',
+				label: '保護依頼時にページをウォッチリストに追加する',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'watchPPTaggedPages',
-				label: 'Add page to watchlist when tagging with protection template',
+				label: '保護テンプレートでページをタグ付けする際、ウォッチリストにページを追加する',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'watchProtectedPages',
-				label: 'Add page to watchlist when protecting',
-				helptip: 'If also tagging the page after protection, that preference will be favored.',
+				label: '保護する際にページをウォッチリストに追加する',
+				helptip: 'ページ保護後にタグ付けも行う場合は、そちらが優先されます。',
 				adminOnly: true,
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums

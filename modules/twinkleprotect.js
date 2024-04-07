@@ -20,22 +20,22 @@ Twinkle.protect = function twinkleprotect() {
 	}
 
 	Twinkle.addPortletLink(Twinkle.protect.callback, Morebits.userIsSysop ? 'PP' : 'RPP', 'tw-rpp',
-		Morebits.userIsSysop ? 'Protect page' : 'Request page protection');
+		Morebits.userIsSysop ? 'ページを保護' : 'ページの保護を依頼');
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
 	var Window = new Morebits.simpleWindow(620, 530);
-	Window.setTitle(Morebits.userIsSysop ? 'Apply, request or tag page protection' : 'Request or tag page protection');
+	Window.setTitle(Morebits.userIsSysop ? 'ページ保護の適用、依頼、タグ付け' : 'ページ保護の依頼、タグ付け');
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Protection templates', 'Template:Protection templates');
-	Window.addFooterLink('Protection policy', 'WP:PROT');
-	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#protect');
-	Window.addFooterLink('Give feedback', 'WT:TW');
+	Window.addFooterLink('保護テンプレート', 'Template:Pp#関連項目');
+	Window.addFooterLink('保護の方針', 'Wikipedia:保護の方針');
+	Window.addFooterLink('Twinkle help', ':en:WP:TW/DOC#protect');
+	Window.addFooterLink('フィードバック', 'User talk:Syunsyunminmin/Twinkle');
 
 	var form = new Morebits.quickForm(Twinkle.protect.callback.evaluate);
 	var actionfield = form.append({
 		type: 'field',
-		label: 'Type of action'
+		label: '操作の種類'
 	});
 	if (Morebits.userIsSysop) {
 		actionfield.append({
@@ -44,9 +44,9 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 			event: Twinkle.protect.callback.changeAction,
 			list: [
 				{
-					label: 'Protect page',
+					label: 'ページを保護',
 					value: 'protect',
-					tooltip: 'Apply actual protection to the page.',
+					tooltip: 'ページに保護を適用する。',
 					checked: true
 				}
 			]
@@ -58,21 +58,21 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 		event: Twinkle.protect.callback.changeAction,
 		list: [
 			{
-				label: 'Request page protection',
+				label: 'ページの保護を依頼',
 				value: 'request',
-				tooltip: 'If you want to request protection via WP:RPP' + (Morebits.userIsSysop ? ' instead of doing the protection by yourself.' : '.'),
+				tooltip: (Morebits.userIsSysop ? '自分で保護する代わりに' : '') + 'WP:RFPPで保護を依頼する場合',
 				checked: !Morebits.userIsSysop
 			},
 			{
-				label: 'Tag page with protection template',
+				label: '保護テンプレートをページにタグ付けする',
 				value: 'tag',
-				tooltip: 'If the protecting admin forgot to apply a protection template, or you have just protected the page without tagging, you can use this to apply the appropriate protection tag.',
+				tooltip: '保護する管理者が保護テンプレートを貼り忘れたり、タグを付けずにページを保護した場合、これを使って適切な保護タグを貼り付けることができます。',
 				disabled: mw.config.get('wgArticleId') === 0 || mw.config.get('wgPageContentModel') === 'Scribunto'
 			}
 		]
 	});
 
-	form.append({ type: 'field', label: 'Preset', name: 'field_preset' });
+	form.append({ type: 'field', label: 'プリセット', name: 'field_preset' });
 	form.append({ type: 'field', label: '1', name: 'field1' });
 	form.append({ type: 'field', label: '2', name: 'field2' });
 
@@ -246,13 +246,13 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 
 		if (Twinkle.protect.hasProtectLog) {
 			$linkMarkup.append(
-				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>'));
+				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">保護記録</a>'));
 			if (!currentlyProtected || (!Twinkle.protect.currentProtectionLevels.edit && !Twinkle.protect.currentProtectionLevels.move)) {
 				var lastProtectAction = Twinkle.protect.protectLog[0];
 				if (lastProtectAction.action === 'unprotect') {
-					$linkMarkup.append(' (unprotected ' + new Morebits.date(lastProtectAction.timestamp).calendar('utc') + ')');
+					$linkMarkup.append(' (' + new Morebits.date(lastProtectAction.timestamp).calendar('utc') + 'に保護解除)');
 				} else { // protect or modify
-					$linkMarkup.append(' (expired ' + new Morebits.date(lastProtectAction.params.details[0].expiry).calendar('utc') + ')');
+					$linkMarkup.append(' (' + new Morebits.date(lastProtectAction.params.details[0].expiry).calendar('utc') + 'に期限切れ)');
 				}
 			}
 			$linkMarkup.append(Twinkle.protect.hasStableLog ? $('<span> &bull; </span>') : null);
@@ -272,7 +272,7 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 
 		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
 		Morebits.status.warn(
-			currentlyProtected ? 'Previous protections' : 'This page has been protected in the past',
+			currentlyProtected ? '以前の保護' : 'このページは過去に保護されたことがあります',
 			$linkMarkup[0]
 		);
 	}
@@ -282,42 +282,74 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 
 	if (currentlyProtected) {
 		$.each(Twinkle.protect.currentProtectionLevels, function(type, settings) {
-			var label = type === 'stabilize' ? 'Pending Changes' : Morebits.string.toUpperCaseFirstChar(type);
+			var label = type === 'stabilize' ? 'Pending Changes' : '';
+
+			switch (Morebits.string.toUpperCaseFirstChar(type)) {
+				case 'Edit':
+					label = '編集';
+					break;
+				case 'Move':
+					label = '移動';
+					break;
+				case 'create':
+					label = '作成';
+					break;
+				case 'upload':
+					label = 'アップロード';
+					break;
+				default:
+					label = Morebits.string.toUpperCaseFirstChar(type);
+					break;
+			}
 
 			if (type === 'cascading') { // Covered by another page
-				label = 'Cascading protection ';
+				label = 'カスケード保護 ';
 				protectionNode.push($('<b>' + label + '</b>')[0]);
 				if (settings.source) { // Should by definition exist
 					var sourceLink = '<a target="_blank" href="' + mw.util.getUrl(settings.source) + '">' + settings.source + '</a>';
 					protectionNode.push($('<span>from ' + sourceLink + '</span>')[0]);
 				}
 			} else {
-				var level = settings.level;
+				var level;
+				switch (settings.level) {
+					case 'sysop':
+						level = '管理者のみ';
+						break;
+					case 'extendedconfirmed':
+						level = '拡張承認された利用者のみ';
+						break;
+					case 'autoconfirmed':
+						level = '自動承認された利用者のみ';
+						break;
+					default:
+						level = settings.level;
+						break;
+				}
 				// Make cascading protection more prominent
 				if (settings.cascade) {
-					level += ' (cascading)';
+					level += ' (カスケード)';
 				}
 				protectionNode.push($('<b>' + label + ': ' + level + '</b>')[0]);
 			}
 
 			if (settings.expiry === 'infinity') {
-				protectionNode.push(' (indefinite) ');
+				protectionNode.push(' (無期限) ');
 			} else {
-				protectionNode.push(' (expires ' + new Morebits.date(settings.expiry).calendar('utc') + ') ');
+				protectionNode.push(' (' + new Morebits.date(settings.expiry).calendar('utc') + 'に期限切れ) ');
 			}
 			if (settings.admin) {
 				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' + settings.admin + '</a>';
-				protectionNode.push($('<span>by ' + adminLink + '</span>')[0]);
+				protectionNode.push($('<span>' + adminLink + 'による</span>')[0]);
 			}
 			protectionNode.push($('<span> \u2022 </span>')[0]);
 		});
 		protectionNode = protectionNode.slice(0, -1); // remove the trailing bullet
 		statusLevel = 'warn';
 	} else {
-		protectionNode.push($('<b>no protection</b>')[0]);
+		protectionNode.push($('<b>保護なし</b>')[0]);
 	}
 
-	Morebits.status[statusLevel]('Current protection level', protectionNode);
+	Morebits.status[statusLevel]('現在の保護レベル', protectionNode);
 };
 
 Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
@@ -327,16 +359,16 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 	switch (e.target.values) {
 		case 'protect':
-			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Preset', name: 'field_preset' });
+			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'プリセット', name: 'field_preset' });
 			field_preset.append({
 				type: 'select',
 				name: 'category',
-				label: 'Choose a preset:',
+				label: 'プリセットを選択:',
 				event: Twinkle.protect.callback.changePreset,
 				list: mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate
 			});
 
-			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
+			field2 = new Morebits.quickForm.element({ type: 'field', label: '保護設定', name: 'field2' });
 			field2.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
 			field2.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			// for existing pages
@@ -346,9 +378,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					event: Twinkle.protect.formevents.editmodify,
 					list: [
 						{
-							label: 'Modify edit protection',
+							label: '編集保護設定を変更',
 							name: 'editmodify',
-							tooltip: 'If this is turned off, the edit protection level, and expiry time, will be left as is.',
+							tooltip: 'これをオフにすると、編集保護レベルと有効期限はそのままになります。',
 							checked: true
 						}
 					]
@@ -356,23 +388,20 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'editlevel',
-					label: 'Who can edit:',
+					label: '誰が編集できるか:',
 					event: Twinkle.protect.formevents.editlevel,
-					list: Twinkle.protect.protectionLevels.filter(function(level) {
-						// Filter TE outside of templates and modules
-						return isTemplate || level.value !== 'templateeditor';
-					})
+					list: Twinkle.protect.protectionLevels
 				});
 				field2.append({
 					type: 'select',
 					name: 'editexpiry',
-					label: 'Expires:',
+					label: '期限:',
 					event: function(e) {
 						if (e.target.value === 'custom') {
 							Twinkle.protect.doCustomExpiry(e.target);
 						}
 					},
-					// default expiry selection (2 days) is conditionally set in Twinkle.protect.callback.changePreset
+					// default expiry selection (1 week) is conditionally set in Twinkle.protect.callback.changePreset
 					list: Twinkle.protect.protectionLengths
 				});
 				field2.append({
@@ -380,9 +409,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					event: Twinkle.protect.formevents.movemodify,
 					list: [
 						{
-							label: 'Modify move protection',
+							label: '移動保護設定を変更',
 							name: 'movemodify',
-							tooltip: 'If this is turned off, the move protection level, and expiry time, will be left as is.',
+							tooltip: 'これをオフにすると、移動保護レベルと有効期限はそのままになります。',
 							checked: true
 						}
 					]
@@ -390,17 +419,17 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'movelevel',
-					label: 'Who can move:',
+					label: '誰が移動できるか:',
 					event: Twinkle.protect.formevents.movelevel,
 					list: Twinkle.protect.protectionLevels.filter(function(level) {
 						// Autoconfirmed is required for a move, redundant
-						return level.value !== 'autoconfirmed' && (isTemplate || level.value !== 'templateeditor');
+						return level.value !== 'autoconfirmed';
 					})
 				});
 				field2.append({
 					type: 'select',
 					name: 'moveexpiry',
-					label: 'Expires:',
+					label: '期限:',
 					event: function(e) {
 						if (e.target.value === 'custom') {
 							Twinkle.protect.doCustomExpiry(e.target);
@@ -449,17 +478,14 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'createlevel',
-					label: 'Create protection:',
+					label: '作成保護:',
 					event: Twinkle.protect.formevents.createlevel,
-					list: Twinkle.protect.protectionLevels.filter(function(level) {
-						// Filter TE always, and autoconfirmed in mainspace, redundant since WP:ACPERM
-						return level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed');
-					})
+					list: Twinkle.protect.protectionLevels
 				});
 				field2.append({
 					type: 'select',
 					name: 'createexpiry',
-					label: 'Expires:',
+					label: '期限:',
 					event: function(e) {
 						if (e.target.value === 'custom') {
 							Twinkle.protect.doCustomExpiry(e.target);
@@ -472,14 +498,14 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			field2.append({
 				type: 'textarea',
 				name: 'protectReason',
-				label: 'Reason (for protection log):'
+				label: '理由 (保護記録用):'
 			});
 			field2.append({
 				type: 'div',
 				name: 'protectReason_notes',
-				label: 'Notes:',
+				label: '注記:',
 				style: 'display:inline-block; margin-top:4px;',
-				tooltip: 'Add a note to the protection log that this was requested at RfPP.'
+				tooltip: '保護記録に、RFPPで依頼されたというメモを追加する。'
 			});
 			field2.append({
 				type: 'checkbox',
@@ -487,53 +513,53 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				style: 'display:inline-block; margin-top:4px;',
 				list: [
 					{
-						label: 'RfPP request',
+						label: 'RFPP依頼',
 						name: 'protectReason_notes_rfpp',
 						checked: false,
-						value: 'requested at [[WP:RfPP]]'
+						value: '[[WP:RFPP]]による'
 					}
 				]
 			});
 			field2.append({
 				type: 'input',
 				event: Twinkle.protect.callback.annotateProtectReason,
-				label: 'RfPP revision ID',
+				label: 'RFPP版番号',
 				name: 'protectReason_notes_rfppRevid',
 				value: '',
-				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
+				tooltip: '保護が依頼されたRFPPページの版番号。'
 			});
 			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto') {  // tagging isn't relevant for non-existing or module pages
 				break;
 			}
 			/* falls through */
 		case 'tag':
-			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tagging options', name: 'field1' });
+			field1 = new Morebits.quickForm.element({ type: 'field', label: 'タグ付け設定', name: 'field1' });
 			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
 			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append({
 				type: 'select',
 				name: 'tagtype',
-				label: 'Choose protection template:',
+				label: '保護テンプレートを選択:',
 				list: Twinkle.protect.protectionTags,
 				event: Twinkle.protect.formevents.tagtype
 			});
 
 			var isTemplateNamespace = mw.config.get('wgNamespaceNumber') === 10;
-			var isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:Articles for deletion/');
+			var isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:削除依頼/');
 			var isCode = ['javascript', 'css', 'sanitized-css'].includes(mw.config.get('wgPageContentModel'));
 			field1.append({
 				type: 'checkbox',
 				list: [
 					{
 						name: 'small',
-						label: 'Iconify (small=yes)',
-						tooltip: 'Will use the |small=yes feature of the template, and only render it as a keylock',
+						label: 'アイコン化 (small=yes)',
+						tooltip: 'テンプレートの|small=yes機能を使用し、インジケーターとしてのみ表示する。',
 						checked: true
 					},
 					{
 						name: 'noinclude',
-						label: 'Wrap protection template with &lt;noinclude&gt;',
-						tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
+						label: '保護テンプレートを&lt;noinclude&gt;で囲む',
+						tooltip: '参照読み込みされないように保護テンプレートを&lt;noinclude&gt;で囲む',
 						checked: (isTemplateNamespace || isAFD) && !isCode
 					}
 				]
@@ -541,36 +567,44 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			break;
 
 		case 'request':
-			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Type of protection', name: 'field_preset' });
+			field_preset = new Morebits.quickForm.element({ type: 'field', label: '保護の種類', name: 'field_preset' });
 			field_preset.append({
 				type: 'select',
 				name: 'category',
-				label: 'Type and reason:',
+				label: '種類と理由:',
 				event: Twinkle.protect.callback.changePreset,
 				list: mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate
 			});
 
-			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Options', name: 'field1' });
+			field_preset.append({
+				type: 'checkbox',
+				list: [
+					{
+						name: 'req_template',
+						label: '保護依頼テンプレートを貼り付ける',
+						tooltip: '保護を依頼するページに{{保護依頼}}テンプレートを貼り付ける',
+						checked: true
+					},
+					{
+						name: 'noinclude',
+						label: '保護テンプレートを&lt;noinclude&gt;で囲む',
+						tooltip: '参照読み込みされないように保護依頼テンプレートを&lt;noinclude&gt;で囲む',
+						checked: mw.config.get('wgNamespaceNumber') === 10 || (mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle').indexOf('削除依頼/') === 0)
+					}
+				]
+			});
+
+			field1 = new Morebits.quickForm.element({ type: 'field', label: 'オプション', name: 'field1' });
 			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
 			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append({
-				type: 'select',
-				name: 'expiry',
-				label: 'Duration:',
-				list: [
-					{ label: '', selected: true, value: '' },
-					{ label: 'Temporary', value: 'temporary' },
-					{ label: 'Indefinite', value: 'infinity' }
-				]
-			});
-			field1.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Reason:'
+				label: '理由:'
 			});
 			break;
 		default:
-			alert("Something's afoot in twinkleprotect");
+			alert('twinkleprotectにて何かが進行中です');
 			break;
 	}
 
@@ -667,128 +701,125 @@ Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 
 // NOTE: This list is used by batchprotect as well
 Twinkle.protect.protectionLevels = [
-	{ label: 'All', value: 'all' },
-	{ label: 'Autoconfirmed', value: 'autoconfirmed' },
-	{ label: 'Extended confirmed', value: 'extendedconfirmed' },
-	{ label: 'Template editor', value: 'templateeditor' },
-	{ label: 'Sysop', value: 'sysop', selected: true }
+	{ label: '全ての利用者', value: 'all' },
+	{ label: '自動承認された利用者', value: 'autoconfirmed' },
+	{ label: '拡張承認された利用者', value: 'extendedconfirmed' },
+	{ label: '管理者', value: 'sysop', selected: true }
 ];
 
 // default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
 // NOTE: This list is used by batchprotect as well
 Twinkle.protect.protectionLengths = [
-	{ label: '1 hour', value: '1 hour' },
-	{ label: '2 hours', value: '2 hours' },
-	{ label: '3 hours', value: '3 hours' },
-	{ label: '6 hours', value: '6 hours' },
-	{ label: '12 hours', value: '12 hours' },
-	{ label: '1 day', value: '1 day' },
-	{ label: '2 days', value: '2 days' },
-	{ label: '3 days', value: '3 days' },
-	{ label: '4 days', value: '4 days' },
-	{ label: '1 week', value: '1 week' },
-	{ label: '2 weeks', value: '2 weeks' },
-	{ label: '1 month', value: '1 month' },
-	{ label: '2 months', value: '2 months' },
-	{ label: '3 months', value: '3 months' },
-	{ label: '1 year', value: '1 year' },
-	{ label: 'indefinite', value: 'infinity' },
-	{ label: 'Custom...', value: 'custom' }
+	{ label: '1時間', value: '1 hour' },
+	{ label: '2時間', value: '2 hours' },
+	{ label: '3時間', value: '3 hours' },
+	{ label: '6時間', value: '6 hours' },
+	{ label: '12時間', value: '12 hours' },
+	{ label: '1日間', value: '1 day' },
+	{ label: '2日間', value: '2 days' },
+	{ label: '3日間', value: '3 days' },
+	{ label: '4日間', value: '4 days' },
+	{ label: '1週間', value: '1 week' },
+	{ label: '2週間', value: '2 weeks' },
+	{ label: '1ヶ月間', value: '1 month' },
+	{ label: '2ヶ月間', value: '2 months' },
+	{ label: '3ヶ月間', value: '3 months' },
+	{ label: '1年', value: '1 year' },
+	{ label: '無期限', value: 'infinity' },
+	{ label: 'その他', value: 'custom' }
 ];
 
 Twinkle.protect.protectionTypes = [
-	{ label: 'Unprotection', value: 'unprotect' },
+	{ label: '保護解除', value: 'unprotect' },
 	{
-		label: 'Full protection',
+		label: '全保護',
 		list: [
-			{ label: 'Generic (full)', value: 'pp-protected' },
-			{ label: 'Content dispute/edit warring (full)', value: 'pp-dispute' },
-			{ label: 'Persistent vandalism (full)', value: 'pp-vandalism' },
-			{ label: 'User talk of blocked user (full)', value: 'pp-usertalk' }
+			{ label: '全般 (全)', value: 'pp' },
+			{ label: '編集合戦 (全)', value: 'pp-dispute' },
+			{ label: '拡張承認された利用者による問題投稿の繰り返し (全)', value: 'pp-vandalism' },
+			{ label: '影響が特に大きいテンプレート (全)', value: 'pp-template' }
 		]
 	},
 	{
-		label: 'Template protection',
+		label: '拡張半保護',
 		list: [
-			{ label: 'Highly visible template (TE)', value: 'pp-template' }
+			{ label: '全般 (拡半)', value: 'pp-120-500-protected' },
+			{ label: '(自動)承認された利用者による問題投稿の繰り返し (拡半)', value: 'pp-120-500-vandalism' },
+			{ label: 'プライバシー侵害 (拡半)', value: 'pp-120-500-blp' },
+			{ label: 'ソックパペット (拡半)', value: 'pp-120-500-sock' },
+			{ label: '影響が特に大きいテンプレート (拡半)', value: 'pp-120-500-template' }
 		]
 	},
 	{
-		label: 'Extended confirmed protection',
+		label: '半保護',
 		list: [
-			{ label: 'Generic (ECP)', value: 'pp-30-500' },
-			{ label: 'Arbitration enforcement (ECP)', selected: true, value: 'pp-30-500-arb' },
-			{ label: 'Persistent vandalism (ECP)', value: 'pp-30-500-vandalism' },
-			{ label: 'Disruptive editing (ECP)', value: 'pp-30-500-disruptive' },
-			{ label: 'BLP policy violations (ECP)', value: 'pp-30-500-blp' },
-			{ label: 'Sockpuppetry (ECP)', value: 'pp-30-500-sock' }
+			{ label: '全般 (半)', value: 'pp-semi-protected' },
+			{ label: 'IP・新規利用者による問題投稿の繰り返し (半)', selected: true, value: 'pp-semi-vandalism' },
+			{ label: 'プライバシー侵害 (半)', value: 'pp-semi-blp' },
+			{ label: 'ソックパペット (半)', value: 'pp-semi-sock' },
+			{ label: '影響が特に大きいテンプレート (半)', value: 'pp-semi-template' }
 		]
 	},
 	{
-		label: 'Semi-protection',
+		label: '移動保護',
 		list: [
-			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
-			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
-			{ label: 'Disruptive editing (semi)', value: 'pp-semi-disruptive' },
-			{ label: 'Adding unsourced content (semi)', value: 'pp-semi-unsourced' },
-			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
-			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
-			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
+			{ label: '全般 (移)', value: 'pp-move' },
+			{ label: '移動合戦 (移)', value: 'pp-move-dispute' },
+			{ label: '度重なる荒らし (移)', value: 'pp-move-vandalism' },
+			{ label: '移動不要ページ (移)', value: 'pp-move-indef' }
 		]
 	},
 	{
-		label: 'Pending changes',
+		label: '移動拡張半保護',
 		list: [
-			{ label: 'Generic (PC)', value: 'pp-pc-protected' },
-			{ label: 'Persistent vandalism (PC)', value: 'pp-pc-vandalism' },
-			{ label: 'Disruptive editing (PC)', value: 'pp-pc-disruptive' },
-			{ label: 'Adding unsourced content (PC)', value: 'pp-pc-unsourced' },
-			{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
-		]
-	},
-	{
-		label: 'Move protection',
-		list: [
-			{ label: 'Generic (move)', value: 'pp-move' },
-			{ label: 'Dispute/move warring (move)', value: 'pp-move-dispute' },
-			{ label: 'Page-move vandalism (move)', value: 'pp-move-vandalism' },
-			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
-		]
-	}
-].filter(function(type) {
-	// Filter for templates and flaggedrevs
-	return (isTemplate || type.label !== 'Template protection') && (hasFlaggedRevs || type.label !== 'Pending changes');
-});
-
-Twinkle.protect.protectionTypesCreate = [
-	{ label: 'Unprotection', value: 'unprotect' },
-	{
-		label: 'Create protection',
-		list: [
-			{ label: 'Offensive name', value: 'pp-create-offensive' },
-			{ label: 'Repeatedly recreated', selected: true, value: 'pp-create-salt' },
-			{ label: 'Recently deleted BLP', value: 'pp-create-blp' }
+			{ label: '全般 (移拡)', value: 'pp-120-500-move' },
+			{ label: '度重なる荒らし (移拡)', value: 'pp-120-500-move-vandalism' }
 		]
 	}
 ];
 
-// A page with both regular and PC protection will be assigned its regular
-// protection weight plus 2
-Twinkle.protect.protectionWeight = {
-	sysop: 40,
-	templateeditor: 30,
-	extendedconfirmed: 20,
-	autoconfirmed: 10,
-	flaggedrevs_autoconfirmed: 5,  // Pending Changes protection alone
-	all: 0,
-	flaggedrevs_none: 0  // just in case
-};
+Twinkle.protect.protectionTypesCreate = [
+	{ label: '保護解除', value: 'unprotect' },
+	{
+		label: '作成保護',
+		list: [
+			{ label: '全般 (全)', value: 'pp-create' },
+			{ label: 'ソックパペットによる問題投稿の繰り返し (全)', value: 'pp-create-sock' },
+			{ label: '拡張承認された利用者による問題投稿の繰り返し (全)', value: 'pp-create-vandalism' },
+			{ label: '度重なる宣伝 (全)', value: 'pp-create-spam' },
+			{ label: '削除されたページの改善なき再作成の繰り返し (全)', value: 'pp-create-salt' },
+			{ label: 'プライバシー侵害の記述の繰り返し (全)', value: 'pp-create-blp' }
+		]
+	},
+	{
+		label: '作成拡張半保護',
+		list: [
+			{ label: '全般 (拡)', value: 'pp-120-500-create' },
+			{ label: 'ソックパペットによる問題投稿の繰り返し (拡)', value: 'pp-120-500-create-sock' },
+			{ label: '(自動)承認された利用者による問題投稿の繰り返し (拡)', value: 'pp-120-500-create-vandalism' },
+			{ label: '度重なる宣伝 (拡)', value: 'pp-120-500-create-spam' },
+			{ label: '削除されたページの改善なき再作成の繰り返し (拡)', value: 'pp-120-500-create-salt' },
+			{ label: 'プライバシー侵害の記述の繰り返し (拡)', value: 'pp-120-500-create-blp' }
+		]
+	},
+	{
+		label: '作成半保護',
+		list: [
+			{ label: '全般 (半)', value: 'pp-semi-create' },
+			{ label: 'ソックパペットによる問題投稿の繰り返し (半)', value: 'pp-semi-create-sock' },
+			{ label: 'IP・新規利用者による問題投稿の繰り返し (半)', value: 'pp-semi-create-vandalism' },
+			{ label: '度重なる宣伝 (半)', value: 'pp-semi-create-spam' },
+			{ label: '削除されたページの改善なき再作成の繰り返し (半)', selected: true, value: 'pp-semi-create-salt' },
+			{ label: 'プライバシー侵害の記述の繰り返し (半)', value: 'pp-semi-create-blp' }
+		]
+	}
+];
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
 // Also note: stabilize = Pending Changes level
 // expiry will override any defaults
 Twinkle.protect.protectionPresetsInfo = {
-	'pp-protected': {
+	'pp': {
 		edit: 'sysop',
 		move: 'sysop',
 		reason: null
@@ -796,130 +827,75 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-dispute': {
 		edit: 'sysop',
 		move: 'sysop',
-		reason: '[[WP:PP#Content disputes|Edit warring / content dispute]]'
+		reason: '編集合戦'
 	},
 	'pp-vandalism': {
 		edit: 'sysop',
 		move: 'sysop',
-		reason: 'Persistent [[WP:Vandalism|vandalism]]'
+		reason: '拡張承認された利用者による問題投稿の繰り返し'
 	},
-	'pp-usertalk': {
+	'pp-template': {
 		edit: 'sysop',
 		move: 'sysop',
 		expiry: 'infinity',
-		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
+		reason: '[[WP:HRT|影響が特に大きいテンプレート]]'
 	},
-	'pp-template': {
-		edit: 'templateeditor',
-		move: 'templateeditor',
-		expiry: 'infinity',
-		reason: '[[WP:High-risk templates|Highly visible template]]'
-	},
-	'pp-30-500-arb': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		expiry: 'infinity',
-		reason: '[[WP:30/500|Arbitration enforcement]]',
-		template: 'pp-extended'
-	},
-	'pp-30-500-vandalism': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		reason: 'Persistent [[WP:Vandalism|vandalism]] from (auto)confirmed accounts',
-		template: 'pp-extended'
-	},
-	'pp-30-500-disruptive': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]] from (auto)confirmed accounts',
-		template: 'pp-extended'
-	},
-	'pp-30-500-blp': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		reason: 'Persistent violations of the [[WP:BLP|biographies of living persons policy]] from (auto)confirmed accounts',
-		template: 'pp-extended'
-	},
-	'pp-30-500-sock': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
-		template: 'pp-extended'
-	},
-	'pp-30-500': {
+	'pp-120-500-protected': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: null,
-		template: 'pp-extended'
+		template: 'pp'
+	},
+	'pp-120-500-vandalism': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: '(自動)承認された利用者による問題投稿の繰り返し',
+		template: 'pp-vandalism'
+	},
+	'pp-120-500-blp': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'プライバシー侵害の記述の繰り返し',
+		template: 'pp-vandalism'
+	},
+	'pp-120-500-sock': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: '[[WP:SOCK|ソックパペット]]による問題投稿の繰り返し',
+		template: 'pp-vandalism'
+	},
+	'pp-120-500-template': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		expiry: 'infinity',
+		reason: '[[WP:HRT|影響が特に大きいテンプレート]]',
+		template: 'pp-template'
 	},
 	'pp-semi-vandalism': {
 		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Vandalism|vandalism]]',
+		reason: 'IP・新規利用者による問題投稿の繰り返し',
 		template: 'pp-vandalism'
-	},
-	'pp-semi-disruptive': {
-		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
-		template: 'pp-protected'
-	},
-	'pp-semi-unsourced': {
-		edit: 'autoconfirmed',
-		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
-		template: 'pp-protected'
 	},
 	'pp-semi-blp': {
 		edit: 'autoconfirmed',
-		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
-		template: 'pp-blp'
-	},
-	'pp-semi-usertalk': {
-		edit: 'autoconfirmed',
-		move: 'autoconfirmed',
-		expiry: 'infinity',
-		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
-		template: 'pp-usertalk'
+		reason: 'プライバシー侵害の記述の繰り返し',
+		template: 'pp-vandalism'
 	},
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
-		move: 'autoconfirmed',
 		expiry: 'infinity',
-		reason: '[[WP:High-risk templates|Highly visible template]]',
+		reason: '[[WP:HRT|影響が特に大きいテンプレート]]',
 		template: 'pp-template'
 	},
 	'pp-semi-sock': {
 		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
-		template: 'pp-sock'
+		reason: '[[WP:SOCK|ソックパペット]]による問題投稿の繰り返し',
+		template: 'pp-vandalism'
 	},
 	'pp-semi-protected': {
 		edit: 'autoconfirmed',
 		reason: null,
-		template: 'pp-protected'
-	},
-	'pp-pc-vandalism': {
-		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
-		reason: 'Persistent [[WP:Vandalism|vandalism]]',
-		template: 'pp-pc'
-	},
-	'pp-pc-disruptive': {
-		stabilize: 'autoconfirmed',
-		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
-		template: 'pp-pc'
-	},
-	'pp-pc-unsourced': {
-		stabilize: 'autoconfirmed',
-		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
-		template: 'pp-pc'
-	},
-	'pp-pc-blp': {
-		stabilize: 'autoconfirmed',
-		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
-		template: 'pp-pc'
-	},
-	'pp-pc-protected': {
-		stabilize: 'autoconfirmed',
-		reason: null,
-		template: 'pp-pc'
+		template: 'pp'
 	},
 	'pp-move': {
 		move: 'sysop',
@@ -927,16 +903,28 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-move-dispute': {
 		move: 'sysop',
-		reason: '[[WP:MOVP|Move warring]]'
+		expiry: '1 week',
+		reason: '移動合戦'
 	},
 	'pp-move-vandalism': {
 		move: 'sysop',
-		reason: '[[WP:MOVP|Page-move vandalism]]'
+		reason: '度重なる荒らし'
 	},
 	'pp-move-indef': {
 		move: 'sysop',
 		expiry: 'infinity',
-		reason: '[[WP:MOVP|Highly visible page]]'
+		reason: '移動不要ページ',
+		template: 'pp-move'
+	},
+	'pp-120-500-move': {
+		move: 'extendedconfirmed',
+		reason: null,
+		template: 'pp-move'
+	},
+	'pp-120-500-move-vandalism': {
+		move: 'extendedconfirmed',
+		reason: null,
+		template: 'pp-move-vandalism'
 	},
 	'unprotect': {
 		edit: 'all',
@@ -946,56 +934,105 @@ Twinkle.protect.protectionPresetsInfo = {
 		reason: null,
 		template: 'none'
 	},
-	'pp-create-offensive': {
+	'pp-create-sock': {
 		create: 'sysop',
-		reason: '[[WP:SALT|Offensive name]]'
+		reason: '[[WP:SOCK|ソックパペット]]による問題投稿の繰り返し'
+	},
+	'pp-create': {
+		create: 'sysop',
+		reason: null
+	},
+	'pp-create-vandalism': {
+		create: 'sysop',
+		reason: '拡張承認された利用者による問題投稿の繰り返し'
+	},
+	'pp-create-spam': {
+		create: 'sysop',
+		reason: '度重なる宣伝'
 	},
 	'pp-create-salt': {
-		create: 'extendedconfirmed',
-		reason: '[[WP:SALT|Repeatedly recreated]]'
+		create: 'sysop',
+		reason: '削除されたページの改善なき再作成の繰り返し'
 	},
 	'pp-create-blp': {
+		create: 'sysop',
+		reason: 'プライバシー侵害の記述の繰り返し'
+	},
+	'pp-120-500-create': {
 		create: 'extendedconfirmed',
-		reason: '[[WP:BLPDEL|Recently deleted BLP]]'
+		reason: null
+	},
+	'pp-120-500-create-sock': {
+		create: 'extendedconfirmed',
+		reason: '[[WP:SOCK|ソックパペット]]による問題投稿の繰り返し'
+	},
+	'pp-120-500-create-vandalism': {
+		create: 'extendedconfirmed',
+		reason: '(自動)承認された利用者による問題投稿の繰り返し'
+	},
+	'pp-120-500-create-spam': {
+		create: 'extendedconfirmed',
+		reason: '度重なる宣伝'
+	},
+	'pp-120-500-create-salt': {
+		create: 'extendedconfirmed',
+		reason: '削除されたページの改善なき再作成の繰り返し'
+	},
+	'pp-120-500-create-blp': {
+		create: 'sysop',
+		reason: 'プライバシー侵害の記述の繰り返し'
+	},
+	'pp-semi-create': {
+		create: 'autoconfirmed',
+		reason: null
+	},
+	'pp-semi-create-sock': {
+		create: 'autoconfirmed',
+		reason: '[[WP:SOCK|ソックパペット]]による問題投稿の繰り返し'
+	},
+	'pp-semi-create-vandalism': {
+		create: 'autoconfirmed',
+		reason: 'IP・新規利用者による問題投稿の繰り返し'
+	},
+	'pp-semi-create-spam': {
+		create: 'autoconfirmed',
+		reason: '度重なる宣伝'
+	},
+	'pp-semi-create-salt': {
+		create: 'autoconfirmed',
+		reason: '削除されたページの改善なき再作成の繰り返し'
+	},
+	'pp-semi-create-blp': {
+		create: 'autoconfirmed',
+		reason: 'プライバシー侵害の記述の繰り返し'
 	}
 };
 
 Twinkle.protect.protectionTags = [
 	{
-		label: 'None (remove existing protection templates)',
+		label: 'なし (既にある保護テンプレートを除去する)',
 		value: 'none'
 	},
 	{
-		label: 'None (do not remove existing protection templates)',
+		label: 'なし (既にある保護テンプレートを除去しない)',
 		value: 'noop'
 	},
 	{
-		label: 'Edit protection templates',
+		label: '編集保護テンプレート',
 		list: [
-			{ label: '{{pp-vandalism}}: vandalism', value: 'pp-vandalism' },
-			{ label: '{{pp-dispute}}: dispute/edit war', value: 'pp-dispute' },
-			{ label: '{{pp-blp}}: BLP violations', value: 'pp-blp' },
-			{ label: '{{pp-sock}}: sockpuppetry', value: 'pp-sock' },
-			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
-			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
-			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
-			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' },
-			{ label: '{{pp-extended}}: extended confirmed protection', value: 'pp-extended' }
+			{ label: '{{pp}}: 全般', value: 'pp' },
+			{ label: '{{pp-vandalism}}: 荒らし', value: 'pp-vandalism' },
+			{ label: '{{pp-dispute}}: 編集合戦', value: 'pp-dispute' },
+			{ label: '{{pp-template}}: 影響が特に大きいテンプレート', value: 'pp-template' },
+			{ label: '{{pp-semi-indef}}: 長期間の半保護', value: 'pp-semi-indef' }
 		]
 	},
 	{
-		label: 'Pending changes templates',
+		label: '移動保護テンプレート',
 		list: [
-			{ label: '{{pp-pc}}: pending changes', value: 'pp-pc' }
-		]
-	},
-	{
-		label: 'Move protection templates',
-		list: [
-			{ label: '{{pp-move-dispute}}: dispute/move war', value: 'pp-move-dispute' },
-			{ label: '{{pp-move-vandalism}}: page-move vandalism', value: 'pp-move-vandalism' },
-			{ label: '{{pp-move-indef}}: general long-term', value: 'pp-move-indef' },
-			{ label: '{{pp-move}}: other', value: 'pp-move' }
+			{ label: '{{pp-move-dispute}}: 移動合戦', value: 'pp-move-dispute' },
+			{ label: '{{pp-move-vandalism}}: 度重なる荒らし', value: 'pp-move-vandalism' },
+			{ label: '{{pp-move}}: その他', value: 'pp-move' }
 		]
 	}
 ].filter(function(type) {
@@ -1040,7 +1077,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
 
-			form.editexpiry.value = form.moveexpiry.value = item.expiry || '2 days';
+			form.editexpiry.value = form.moveexpiry.value = item.expiry || '1 week';
 
 
 			if (form.pcmodify) {
@@ -1082,11 +1119,11 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			Twinkle.protect.formevents.tagtype({ target: form.tagtype });
 
 			// Default settings for adding <noinclude> tags to protection templates
-			var isTemplateEditorProtection = form.category.value === 'pp-template';
-			var isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:Articles for deletion/');
+			var isTemplateProtection = form.category.value === 'pp-template';
+			var isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:削除依頼/');
 			var isNotTemplateNamespace = mw.config.get('wgNamespaceNumber') !== 10;
 			var isCode = ['javascript', 'css', 'sanitized-css'].includes(mw.config.get('wgPageContentModel'));
-			if ((isTemplateEditorProtection || isAFD) && !isCode) {
+			if ((isTemplateProtection || isAFD) && !isCode) {
 				form.noinclude.checked = true;
 			} else if (isCode || isNotTemplateNamespace) {
 				form.noinclude.checked = false;
@@ -1116,20 +1153,26 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			small: input.small,
 			noinclude: input.noinclude
 		};
+	} else if (input.actiontype === 'request') {
+		tagparams = {
+			tag: '保護依頼',
+			reason: false,
+			noinclude: input.noinclude
+		};
 	}
 
 	switch (input.actiontype) {
 		case 'protect':
 			// protect the page
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-			Morebits.wiki.actionCompleted.notice = 'Protection complete';
+			Morebits.wiki.actionCompleted.notice = '保護完了';
 
 			var statusInited = false;
 			var thispage;
 
 			var allDone = function twinkleprotectCallbackAllDone() {
 				if (thispage) {
-					thispage.getStatusElement().info('done');
+					thispage.getStatusElement().info('完了');
 				}
 				if (tagparams) {
 					Twinkle.protect.callbacks.taggingPageInitial(tagparams);
@@ -1137,7 +1180,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			};
 
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
-				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Protecting page');
+				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'ページを保護');
 				if (mw.config.get('wgArticleId')) {
 					if (input.editmodify) {
 						thispage.setEditProtection(input.editlevel, input.editexpiry);
@@ -1147,7 +1190,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 						if (input.movelevel) {
 							thispage.setMoveProtection(input.movelevel, input.moveexpiry);
 						} else {
-							alert('You must chose a move protection level!');
+							alert('移動保護のレベルを選択して下さい!');
 							return;
 						}
 					}
@@ -1160,12 +1203,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				if (input.protectReason) {
 					thispage.setEditSummary(input.protectReason);
 				} else {
-					alert('You must enter a protect reason, which will be inscribed into the protection log.');
+					alert('保護理由を入力する必要があります。入力された理由は保護記録に記録されます。');
 					return;
 				}
 
 				if (input.protectReason_notes_rfppRevid && !/^\d+$/.test(input.protectReason_notes_rfppRevid)) {
-					alert('The provided revision ID is malformed. Please see https://en.wikipedia.org/wiki/Help:Permanent_link for information on how to find the correct ID (also called "oldid").');
+					alert('指定された版番号が無効です。正しい番号（"oldid"とも言う）を見つける方法に関しては https://ja.wikipedia.org/wiki/Help:固定リンク をご覧ください。');
 					return;
 				}
 
@@ -1175,7 +1218,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					statusInited = true;
 				}
 
-				thispage.setChangeTags(Twinkle.changeTags);
+				// thispage.setChangeTags(Twinkle.changeTags);
 				thispage.protect(next);
 			};
 
@@ -1217,7 +1260,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			} else if (input.pcmodify) {
 				stabilizeIt();
 			} else {
-				alert("Please give Twinkle something to do! \nIf you just want to tag the page, you can choose the 'Tag page with protection template' option at the top.");
+				alert("Twinkleに何かをさせてあげてください!\nページにタグを付けるだけなら、上部にある'保護テンプレートをページにタグ付けする'オプションを選ぶことができます。");
 			}
 
 			break;
@@ -1230,129 +1273,132 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 			Morebits.wiki.actionCompleted.followRedirect = false;
-			Morebits.wiki.actionCompleted.notice = 'Tagging complete';
+			Morebits.wiki.actionCompleted.notice = 'タグ付け操作';
 
 			Twinkle.protect.callbacks.taggingPageInitial(tagparams);
 			break;
 
 		case 'request':
+
+			if (!input.reason) {
+				alert('保護が必要な理由を入力してください。');
+				return;
+			}
 			// file request at RFPP
 			var typename, typereason;
 			switch (input.category) {
 				case 'pp-dispute':
 				case 'pp-vandalism':
-				case 'pp-usertalk':
-				case 'pp-protected':
-					typename = 'full protection';
-					break;
+				case 'pp':
 				case 'pp-template':
-					typename = 'template protection';
+					typename = '全保護';
 					break;
-				case 'pp-30-500-arb':
-				case 'pp-30-500-vandalism':
-				case 'pp-30-500-disruptive':
-				case 'pp-30-500-blp':
-				case 'pp-30-500-sock':
-				case 'pp-30-500':
-					typename = 'extended confirmed protection';
+				case 'pp-120-500-vandalism':
+				case 'pp-120-500-blp':
+				case 'pp-120-500-sock':
+				case 'pp-120-500-protected':
+				case 'pp-120-500-template':
+					typename = '拡張半保護';
 					break;
 				case 'pp-semi-vandalism':
-				case 'pp-semi-disruptive':
-				case 'pp-semi-unsourced':
-				case 'pp-semi-usertalk':
 				case 'pp-semi-sock':
 				case 'pp-semi-blp':
 				case 'pp-semi-protected':
-					typename = 'semi-protection';
-					break;
-				case 'pp-pc-vandalism':
-				case 'pp-pc-blp':
-				case 'pp-pc-protected':
-				case 'pp-pc-unsourced':
-				case 'pp-pc-disruptive':
-					typename = 'pending changes';
+				case 'pp-semi-template':
+					typename = '半保護';
 					break;
 				case 'pp-move':
 				case 'pp-move-dispute':
 				case 'pp-move-indef':
 				case 'pp-move-vandalism':
-					typename = 'move protection';
+					typename = '移動保護';
 					break;
-				case 'pp-create-offensive':
+				case 'pp-120-500-move':
+				case 'pp-120-500-move-vandalism':
+					typename = '移動拡張半保護';
+					break;
+				case 'pp-create':
+				case 'pp-create-sock':
+				case 'pp-create-vandalism':
+				case 'pp-create-spam':
 				case 'pp-create-blp':
 				case 'pp-create-salt':
-					typename = 'create protection';
+					typename = '作成保護';
 					break;
-				case 'unprotect':
-					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) {
-						if (!pl.admin || Twinkle.protect.trustedBots.indexOf(pl.admin) !== -1) {
-							return null;
-						}
-						return 'User:' + pl.admin;
-					});
-					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + Morebits.array.uniq(admins).join(', ') + ') first?')) {
-						return false;
-					}
-					// otherwise falls through
+				case 'pp-120-500-create':
+				case 'pp-120-500-create-sock':
+				case 'pp-120-500-create-vandalism':
+				case 'pp-120-500-create-spam':
+				case 'pp-120-500-create-blp':
+				case 'pp-120-500-create-salt':
+					typename = '作成拡張半保護';
+					break;
+				case 'pp-semi-create':
+				case 'pp-semi-create-sock':
+				case 'pp-semi-create-vandalism':
+				case 'pp-semi-create-spam':
+				case 'pp-semi-create-blp':
+				case 'pp-semi-create-salt':
+					typename = '作成半保護';
+					break;
 				default:
-					typename = 'unprotection';
+					typename = '保護解除';
 					break;
 			}
 			switch (input.category) {
 				case 'pp-dispute':
-					typereason = 'Content dispute/edit warring';
+					typereason = '編集合戦';
 					break;
 				case 'pp-vandalism':
+				case 'pp-create-vandalism':
+					typereason = '拡張承認された利用者による問題投稿の繰り返し';
+					break;
+				case 'pp-120-500-vandalism':
+				case 'pp-120-500-create-vandalism':
+					typereason = '(自動)承認された利用者による問題投稿の繰り返し';
+					break;
 				case 'pp-semi-vandalism':
-				case 'pp-pc-vandalism':
-				case 'pp-30-500-vandalism':
-					typereason = 'Persistent [[WP:VAND|vandalism]]';
-					break;
-				case 'pp-semi-disruptive':
-				case 'pp-pc-disruptive':
-				case 'pp-30-500-disruptive':
-					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
-					break;
-				case 'pp-semi-unsourced':
-				case 'pp-pc-unsourced':
-					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
-					break;
-				case 'pp-template':
-					typereason = '[[WP:HIGHRISK|High-risk template]]';
-					break;
-				case 'pp-30-500-arb':
-					typereason = '[[WP:30/500|Arbitration enforcement]]';
-					break;
-				case 'pp-usertalk':
-				case 'pp-semi-usertalk':
-					typereason = 'Inappropriate use of user talk page while blocked';
-					break;
-				case 'pp-semi-sock':
-				case 'pp-30-500-sock':
-					typereason = 'Persistent [[WP:SOCK|sockpuppetry]]';
-					break;
-				case 'pp-semi-blp':
-				case 'pp-pc-blp':
-				case 'pp-30-500-blp':
-					typereason = '[[WP:BLP|BLP]] policy violations';
-					break;
-				case 'pp-move-dispute':
-					typereason = 'Page title dispute/move warring';
+				case 'pp-semi-create-vandalism':
+					typereason = 'IP・新規利用者による問題投稿の繰り返し';
 					break;
 				case 'pp-move-vandalism':
-					typereason = 'Page-move vandalism';
+				case 'pp-move-120-500-vandalism':
+					typereason = '度重なる荒らし';
+					break;
+				case 'pp-template':
+				case 'pp-120-500-template':
+				case 'pp-semi-template':
+					typereason = '[[WP:HRT|影響が特に大きいテンプレート]]';
+					break;
+				case 'pp-semi-sock':
+				case 'pp-120-500-sock':
+				case 'pp-create-sock':
+				case 'pp-120-500-create-sock':
+				case 'pp-semi-create-sock':
+					typereason = '[[WP:SOCK|ソックパペット]]による問題投稿の繰り返し';
+					break;
+				case 'pp-semi-blp':
+				case 'pp-120-500-blp':
+				case 'pp-create-blp':
+				case 'pp-120-500-create-blp':
+				case 'pp-semi-create-blp':
+					typereason = 'プライバシー侵害の記述の繰り返し';
+					break;
+				case 'pp-move-dispute':
+					typereason = '移動合戦';
+					break;
+				case 'pp-create-spam':
+				case 'pp-120-500-create-spam':
+				case 'pp-semi-create-spam':
+					typereason = '度重なる宣伝';
 					break;
 				case 'pp-move-indef':
-					typereason = 'Highly visible page';
-					break;
-				case 'pp-create-offensive':
-					typereason = 'Offensive name';
-					break;
-				case 'pp-create-blp':
-					typereason = 'Recently deleted [[WP:BLP|BLP]]';
+					typereason = '移動不要ページ';
 					break;
 				case 'pp-create-salt':
-					typereason = 'Repeatedly recreated';
+				case 'pp-120-500-create-salt':
+				case 'pp-semi-create-salt':
+					typereason = '削除されたページの改善なき再作成の繰り返し';
 					break;
 				default:
 					typereason = '';
@@ -1380,19 +1426,22 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
 
-			var rppName = 'Wikipedia:Requests for page protection/Increase';
+			var rppName = 'Wikipedia:保護依頼';
 
 			// Updating data for the action completed event
-			Morebits.wiki.actionCompleted.redirect = 'Wikipedia: Requests for page protection';
-			Morebits.wiki.actionCompleted.notice = 'Nomination completed, redirecting now to the discussion page';
+			Morebits.wiki.actionCompleted.redirect = rppparams.typename !== '保護解除' ? 'Project:保護依頼' : 'Project:保護解除依頼';
+			Morebits.wiki.actionCompleted.notice = '依頼完了、依頼ページへリダイレクトします。';
 
-			var rppPage = new Morebits.wiki.page(rppName, 'Requesting protection of page');
+			var rppPage = new Morebits.wiki.page(rppName, 'ページの保護を依頼');
 			rppPage.setFollowRedirect(true);
 			rppPage.setCallbackParameters(rppparams);
 			rppPage.load(Twinkle.protect.callbacks.fileRequest);
+			if (input.req_template && rppparams.typename !== '保護解除') {
+				Twinkle.protect.callbacks.taggingPageInitial(tagparams);
+			}
 			break;
 		default:
-			alert('twinkleprotect: unknown kind of action');
+			alert('twinkleprotect: 不明な操作');
 			break;
 	}
 };
@@ -1414,10 +1463,14 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 	} else if (this.name === 'protectReason_notes_rfppRevid') {
 		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter(function(el) {
 			return el.indexOf('[[Special:Permalink') === -1;
+		}).filter(function(el) {
+			return el.indexOf('[[WP:RFPP') === -1;
 		});
 		if (e.target.value.length) {
-			var permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
+			var permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + '（ノート_/_履歴_/_ログ_/_リンク元）|WP:RFPP]]による';
 			Twinkle.protect.protectReasonAnnotations.push(permalink);
+		} else {
+			Twinkle.protect.protectReasonAnnotations.push('[[WP:RFPP]]による');
 		}
 	}
 
@@ -1435,7 +1488,7 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 
-		var protectedPage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+		var protectedPage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'ページにタグ付け');
 		protectedPage.setCallbackParameters(tagparams);
 		protectedPage.load(Twinkle.protect.callbacks.taggingPage);
 	},
@@ -1444,16 +1497,16 @@ Twinkle.protect.callbacks = {
 		var text = protectedPage.getPageText();
 		var tag, summary;
 
-		var oldtag_re = /(?:\/\*)?\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*(?:\*\/)?\s*/gi;
+		var oldtag_re = /(?:\/\*)?\s*(?:<noinclude>)?\s*\{\{\s*((?:pp|保護依頼)[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*(?:\*\/)?\s*/gi;
 		var re_result = oldtag_re.exec(text);
 		if (re_result) {
-			if (params.tag === 'none' || confirm('{{' + re_result[1] + '}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.')) {
+			if (params.tag === 'none' || confirm('ページ上に保護関連テンプレート（{{' + re_result[1] + '}}など）が見つかりました。\nOKをクリックして除去する、またはCancelをクリックしてそのままにしておきます。')) {
 				text = text.replace(oldtag_re, '');
 			}
 		}
 
 		if (params.tag === 'none') {
-			summary = 'Removing protection template';
+			summary = '保護テンプレートの除去中';
 		} else {
 			tag = params.tag;
 			if (params.reason) {
@@ -1463,10 +1516,10 @@ Twinkle.protect.callbacks = {
 				tag += '|small=yes';
 			}
 
-			if (/^\s*#redirect/i.test(text)) { // redirect page
+			if (/^\s*#(redirect|転送)/i.test(text)) { // redirect page
 				// Only tag if no {{rcat shell}} is found
 				if (!text.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
-					text = text.replace(/#REDIRECT ?(\[\[.*?\]\])(.*)/i, '#REDIRECT $1$2\n\n{{' + tag + '}}');
+					text = text.replace(/#(redirect|転送) ?(\[\[.*?\]\])(.*)/i, '#REDIRECT $1$2\n\n{{' + tag + '}}');
 				} else {
 					Morebits.status.info('Redirect category shell present', 'nothing to do');
 					return;
@@ -1494,11 +1547,11 @@ Twinkle.protect.callbacks = {
 					text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
 				}
 			}
-			summary = 'Adding {{' + params.tag + '}}';
+			summary = '{{' + params.tag + '}}を追加' + Twinkle.summaryAd;
 		}
 
 		protectedPage.setEditSummary(summary);
-		protectedPage.setChangeTags(Twinkle.changeTags);
+		// protectedPage.setChangeTags(Twinkle.changeTags);
 		protectedPage.setWatchlist(Twinkle.getPref('watchPPTaggedPages'));
 		protectedPage.setPageText(text);
 		protectedPage.setCreateOption('nocreate');
@@ -1508,154 +1561,152 @@ Twinkle.protect.callbacks = {
 
 	fileRequest: function(rppPage) {
 
-		var rppPage2 = new Morebits.wiki.page('Wikipedia:Requests for page protection/Decrease', 'Loading requests pages');
+		var rppPage2 = new Morebits.wiki.page('Wikipedia:保護解除依頼', '依頼ページを読み込み中');
 		rppPage2.load(function() {
 			var params = rppPage.getCallbackParameters();
 			var text = rppPage.getPageText();
 			var statusElement = rppPage.getStatusElement();
 			var text2 = rppPage2.getPageText();
 
-			var rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*===', 'm');
-			var tag = rppRe.exec(text) || rppRe.exec(text2);
-
-			var rppLink = document.createElement('a');
-			rppLink.setAttribute('href', mw.util.getUrl('Wikipedia:Requests for page protection'));
-			rppLink.appendChild(document.createTextNode('Wikipedia:Requests for page protection'));
-
-			if (tag) {
-				statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
-				return;
-			}
-
-			var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
-			if (new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text) || new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text2)) {
-				statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
-				return;
-			}
-			newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
-
-			var words;
-			switch (params.expiry) {
-				case 'temporary':
-					words = 'Temporary ';
-					break;
-				case 'infinity':
-					words = 'Indefinite ';
-					break;
-				default:
-					words = '';
-					break;
-			}
-
-			words += params.typename;
-
-			newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + (params.reason !== '' ? ":''' " +
-				Morebits.string.formatReasonText(params.reason) : ".'''") + ' ~~~~';
-
 			// If either protection type results in a increased status, then post it under increase
 			// else we post it under decrease
 			var increase = false;
-			var protInfo = Twinkle.protect.protectionPresetsInfo[params.category];
-
-			// function to compute protection weights (see comment at Twinkle.protect.protectionWeight)
-			var computeWeight = function(mainLevel, stabilizeLevel) {
-				var result = Twinkle.protect.protectionWeight[mainLevel || 'all'];
-				if (stabilizeLevel) {
-					if (result) {
-						if (stabilizeLevel.level === 'autoconfirmed') {
-							result += 2;
-						}
-					} else {
-						result = Twinkle.protect.protectionWeight['flaggedrevs_' + stabilizeLevel];
-					}
-				}
-				return result;
-			};
-
-			// compare the page's current protection weights with the protection we are requesting
-			var editWeight = computeWeight(Twinkle.protect.currentProtectionLevels.edit &&
-				Twinkle.protect.currentProtectionLevels.edit.level,
-			Twinkle.protect.currentProtectionLevels.stabilize &&
-				Twinkle.protect.currentProtectionLevels.stabilize.level);
-			if (computeWeight(protInfo.edit, protInfo.stabilize) > editWeight ||
-				computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move &&
-				Twinkle.protect.currentProtectionLevels.move.level) ||
-				computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create &&
-				Twinkle.protect.currentProtectionLevels.create.level)) {
+			if (params.typename !== '保護解除') {
 				increase = true;
 			}
 
+			var rppRe = new RegExp('====\\s*(\\{\\{)?\\s*[pP]age\\s*\\|\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\}\\})?\\s*====', 'm');
+			var newtag = '\n==== {{Page|' + Morebits.pageNameNorm + '}} ====\n';
+
+			var tag = new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text) || rppRe.exec(text);
+			var tag2 = new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text2) || rppRe.exec(text2);
+
+			var rppLink = document.createElement('a');
+			rppLink.setAttribute('href', mw.util.getUrl('Wikipedia:保護依頼'));
+			rppLink.appendChild(document.createTextNode('Wikipedia:保護依頼'));
+
+			var rppLink2 = document.createElement('a');
+			rppLink2.setAttribute('href', mw.util.getUrl('Wikipedia:保護解除依頼'));
+			rppLink2.appendChild(document.createTextNode('Wikipedia:保護解除依頼'));
+
+			if (tag && increase) {
+				statusElement.error([ 'このページの保護依頼が', rppLink, 'で見つかりました、中止します。' ]);
+				return;
+			} else if (tag2 && !increase) {
+				statusElement.error([ 'このページの保護解除依頼が', rppLink2, 'で見つかりました、中止します。' ]);
+				return;
+			}
+
+			newtag += Morebits.string.formatReasonText(params.reason) + '--~~~~';
+
 			if (increase) {
-				var originalTextLength = text.length;
-				text += '\n' + newtag;
-				if (text.length === originalTextLength) {
-					var linknode = document.createElement('a');
-					linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
-					linknode.appendChild(document.createTextNode('How to fix RPP'));
-					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ]);
-					return;
-				}
-				statusElement.status('Adding new request...');
-				rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
-					Morebits.pageNameNorm + ']].');
-				rppPage.setChangeTags(Twinkle.changeTags);
-				rppPage.setPageText(text);
-				rppPage.setCreateOption('recreate');
-				rppPage.save(function() {
-					// Watch the page being requested
-					var watchPref = Twinkle.getPref('watchRequestedPages');
-					// action=watch has no way to rely on user preferences (T262912), so we do it manually.
-					// The watchdefault pref appears to reliably return '1' (string),
-					// but that's not consistent among prefs so might as well be "correct"
-					var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
-					if (watch) {
-						var watch_query = {
-							action: 'watch',
-							titles: mw.config.get('wgPageName'),
-							token: mw.user.tokens.get('watchToken')
-						};
-						// Only add the expiry if page is unwatched or already temporarily watched
-						if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
-							watch_query.expiry = watchPref;
-						}
-						new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
+				rppPage.parse(function() {
+					var sections = rppPage.getSections();
+					// 依頼先の節取得
+					var time = new Morebits.date();
+					var month = time.getMonth() + 1;
+					var date = time.getDate();
+					var section = null;
+					if (date < 11) {
+						section = month + '月上旬（1日から10日まで）';
+					} else if (date > 20) {
+						section = month + '月下旬（21日から末日まで）';
+					} else {
+						section = month + '月中旬（11日から20日まで）';
 					}
+					sections = sections.filter(function(sections) {
+						return sections.level === '3';
+					}).filter(function(sections) {
+						return sections.fromtitle === 'Wikipedia:保護依頼';
+					}).filter(function(sections) {
+						return sections.line === section;
+					});
+					if (sections.length !== 1) {
+						statusElement.error('報告先の節を正しく取得できませんでした。');
+						return;
+					}
+					statusElement.status('新規依頼を追加中...');
+					rppPage.setPageSection(Number(sections[0].index));
+					rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ [[:' + Morebits.pageNameNorm + ']]の' + params.typename + 'を依頼' + Twinkle.summaryAd);
+					// rppPage.setChangeTags(Twinkle.changeTags);
+					rppPage.setAppendText(newtag);
+					rppPage.setCreateOption('recreate');
+
+					rppPage.save(function() {
+						// Watch the page being requested
+						var watchPref = Twinkle.getPref('watchRequestedPages');
+						// action=watch has no way to rely on user preferences (T262912), so we do it manually.
+						// The watchdefault pref appears to reliably return '1' (string),
+						// but that's not consistent among prefs so might as well be "correct"
+						var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+						if (watch) {
+							var watch_query = {
+								action: 'watch',
+								titles: mw.config.get('wgPageName'),
+								token: mw.user.tokens.get('watchToken')
+							};
+							// Only add the expiry if page is unwatched or already temporarily watched
+							if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
+								watch_query.expiry = watchPref;
+							}
+							new Morebits.wiki.api('依頼したページをウォッチリストに追加中', watch_query).post();
+						}
+					});
 				});
 			} else {
-				var originalTextLength2 = text2.length;
-				text2 += '\n' + newtag;
-				if (text2.length === originalTextLength2) {
-					var linknode2 = document.createElement('a');
-					linknode2.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
-					linknode2.appendChild(document.createTextNode('How to fix RPP'));
-					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode2, '.' ]);
-					return;
-				}
-				statusElement.status('Adding new request...');
-				rppPage2.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
-					Morebits.pageNameNorm + ']].');
-				rppPage2.setChangeTags(Twinkle.changeTags);
-				rppPage2.setPageText(text2);
-				rppPage2.setCreateOption('recreate');
-				rppPage2.save(function() {
-					// Watch the page being requested
-					var watchPref = Twinkle.getPref('watchRequestedPages');
-					// action=watch has no way to rely on user preferences (T262912), so we do it manually.
-					// The watchdefault pref appears to reliably return '1' (string),
-					// but that's not consistent among prefs so might as well be "correct"
-					var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
-					if (watch) {
-						var watch_query = {
-							action: 'watch',
-							titles: mw.config.get('wgPageName'),
-							token: mw.user.tokens.get('watchToken')
-						};
-						// Only add the expiry if page is unwatched or already temporarily watched
-						if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
-							watch_query.expiry = watchPref;
-						}
-						new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
+				rppPage2.parse(function() {
+					var sections = rppPage2.getSections();
+					// 依頼先の節取得
+					var time = new Morebits.date();
+					var month = time.getMonth() + 1;
+					var date = time.getDate();
+					var section = null;
+					if (date < 11) {
+						section = month + '月上旬（1日から10日まで）';
+					} else if (date > 20) {
+						section = month + '月下旬（21日から末日まで）';
+					} else {
+						section = month + '月中旬（11日から20日まで）';
 					}
+					sections = sections.filter(function(sections) {
+						return sections.level === '3';
+					}).filter(function(sections) {
+						return sections.fromtitle === 'Wikipedia:保護解除依頼';
+					}).filter(function(sections) {
+						return sections.line === section;
+					});
+					if (sections.length !== 1) {
+						statusElement.error('報告先の節を正しく取得できませんでした。');
+						return;
+					}
+					text2 += '\n' + newtag;
+					statusElement.status('新規依頼を追加中...');
+					rppPage2.setPageSection(Number(sections[0].index));
+					rppPage2.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ [[:' + Morebits.pageNameNorm + ']]の' + params.typename + 'を依頼' + Twinkle.summaryAd);
+					// rppPage2.setChangeTags(Twinkle.changeTags);
+					rppPage2.setAppendText(newtag);
+					rppPage2.setCreateOption('recreate');
+
+					rppPage2.save(function() {
+						// Watch the page being requested
+						var watchPref = Twinkle.getPref('watchRequestedPages');
+						// action=watch has no way to rely on user preferences (T262912), so we do it manually.
+						// The watchdefault pref appears to reliably return '1' (string),
+						// but that's not consistent among prefs so might as well be "correct"
+						var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+						if (watch) {
+							var watch_query = {
+								action: 'watch',
+								titles: mw.config.get('wgPageName'),
+								token: mw.user.tokens.get('watchToken')
+							};
+							// Only add the expiry if page is unwatched or already temporarily watched
+							if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
+								watch_query.expiry = watchPref;
+							}
+							new Morebits.wiki.api('依頼したページをウォッチリストに追加中', watch_query).post();
+						}
+					});
 				});
 			}
 		});
