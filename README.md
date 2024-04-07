@@ -13,4 +13,4 @@
 * [enwiki twinkle](https://github.com/wikimedia-gadgets/twinkle) (フォーク元のレポジトリ)
 
 * select2を除き[CC BY-SA](LICENSE.txt)
-* [select2](https://github.com/select2/select2)は[MIT license](https://github.com/select2/select2/blob/develop/LICENSE.md) 
+* [select2](https://github.com/select2/select2)は[MIT license](https://github.com/select2/select2/blob/develop/LICENSE.md)

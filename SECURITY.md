@@ -5,7 +5,7 @@
 フォームを利用する
 
 * [Security advisory](https://github.com/SyunSyunMinMin/twinkle/security/advisories/new)
-  
+
 またはメールで
 
 * @Syunsyunminmin: [メール](https://ja.wikipedia.org/wiki/Special:EmailUser/Syunsyunminmin)
