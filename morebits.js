@@ -1840,28 +1840,28 @@ Morebits.date = function() {
  */
 Morebits.date.localeData = {
 	// message names here correspond to MediaWiki message names
-	months: [msg('january', 'January'), msg('february', 'February'), msg('march', 'March'),
-		msg('april', 'April'), msg('may_long', 'May'), msg('june', 'June'),
-		msg('july', 'July'), msg('august', 'August'), msg('september', 'September'),
-		msg('october', 'October'), msg('november', 'November'), msg('december', 'December')],
-	monthsShort: [msg('jan', 'Jan'), msg('feb', 'Feb'), msg('mar', 'Mar'),
-		msg('apr', 'Apr'), msg('may', 'May'), msg('jun', 'Jun'),
-		msg('jul', 'Jul'), msg('aug', 'Aug'), msg('sep', 'Sep'),
-		msg('oct', 'Oct'), msg('nov', 'Nov'), msg('dec', 'Dec')],
-	days: [msg('sunday', 'Sunday'), msg('monday', 'Monday'), msg('tuesday', 'Tuesday'),
-		msg('wednesday', 'Wednesday'), msg('thursday', 'Thursday'), msg('friday', 'Friday'),
-		msg('saturday', 'Saturday')],
-	daysShort: [msg('sun', 'Sun'), msg('mon', 'Mon'), msg('tue', 'Tue'),
-		msg('wed', 'Wed'), msg('thu', 'Thu'), msg('fri', 'Fri'),
-		msg('sat', 'Sat')],
+	months: [msg('january', '1月'), msg('february', '2月'), msg('march', '3月'),
+		msg('april', '4月'), msg('may_long', '5月'), msg('june', '6月'),
+		msg('july', '7月'), msg('august', '8月'), msg('september', '9月'),
+		msg('october', '10月'), msg('november', '11月'), msg('december', '12月')],
+	monthsShort: [msg('jan', '1月'), msg('feb', '2月'), msg('mar', '3月'),
+		msg('apr', '4月'), msg('may', '5月'), msg('jun', '6月'),
+		msg('jul', '7月'), msg('aug', '8月'), msg('sep', '9月'),
+		msg('oct', '10月'), msg('nov', '11月'), msg('dec', '12月')],
+	days: [msg('sunday', '日曜日'), msg('monday', '月曜日'), msg('tuesday', '火曜日'),
+		msg('wednesday', '水曜日'), msg('thursday', '木曜日'), msg('friday', '金曜日'),
+		msg('saturday', '土曜日')],
+	daysShort: [msg('sun', '日'), msg('mon', '月'), msg('tue', '火'),
+		msg('wed', '水'), msg('thu', '木'), msg('fri', '金'),
+		msg('sat', '土')],
 
 	relativeTimes: {
-		thisDay: msg('relative-today', '[Today at] h:mm A'),
-		prevDay: msg('relative-prevday', '[Yesterday at] h:mm A'),
-		nextDay: msg('relative-nextday', '[Tomorrow at] h:mm A'),
-		thisWeek: msg('relative-thisweek', 'dddd [at] h:mm A'),
-		pastWeek: msg('relative-pastweek', '[Last] dddd [at] h:mm A'),
-		other: msg('relative-other', 'YYYY-MM-DD')
+		thisDay: msg('relative-today', '[今日の]H:mm'),
+		prevDay: msg('relative-prevday', '[昨日の]H:mm'),
+		nextDay: msg('relative-nextday', '[明日の]H:mm'),
+		thisWeek: msg('relative-thisweek', 'dddd[の]H:mm'),
+		pastWeek: msg('relative-pastweek', '[先週]dddd[の]H:mm'),
+		other: msg('relative-other', 'YYYY MM DD')
 	}
 };
 
@@ -2045,7 +2045,7 @@ Morebits.date.prototype = {
 		};
 		var h24 = udate.getHours(), m = udate.getMinutes(), s = udate.getSeconds(), ms = udate.getMilliseconds();
 		var D = udate.getDate(), M = udate.getMonth() + 1, Y = udate.getFullYear();
-		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? msg('period-pm', 'PM') : msg('period-am', 'AM');
+		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? msg('period-pm', '午後') : msg('period-am', '午前');
 		var replacementMap = {
 			HH: pad(h24), H: h24, hh: pad(h12), h: h12, A: amOrPm,
 			mm: pad(m), m: m,
@@ -2108,8 +2108,8 @@ Morebits.date.prototype = {
 	 * @returns {RegExp}
 	 */
 	monthHeaderRegex: function() {
-		return new RegExp('^(==+)\\s*(?:' + this.getUTCMonthName() + '|' + this.getUTCMonthNameAbbrev() +
-			')\\s+' + this.getUTCFullYear() + '\\s*\\1', 'mg');
+		return new RegExp('^(==+)\\s*' + this.getUTCFullYear() +
+			'年+(?:' + this.getUTCMonthName() + '|' + this.getUTCMonthNameAbbrev() + ')\\s*\\1', 'mg');
 	},
 
 	/**
@@ -2125,7 +2125,7 @@ Morebits.date.prototype = {
 		level = isNaN(level) ? 2 : level;
 
 		var header = Array(level + 1).join('='); // String.prototype.repeat not supported in IE 11
-		var text = this.getUTCMonthName() + ' ' + this.getUTCFullYear();
+		var text = this.getUTCFullYear() + '年' + this.getUTCMonthName();
 
 		if (header.length) { // wikitext-formatted header
 			return header + ' ' + text + ' ' + header;
@@ -2762,7 +2762,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.loadQuery.inprop += '|protection';
 		}
 
-		ctx.loadApi = new Morebits.wiki.api(msg('retrieving-page', 'Retrieving page...'), ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
+		ctx.loadApi = new Morebits.wiki.api(msg('retrieving-page', 'ページを取得中...'), ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
 		ctx.loadApi.setParent(this);
 		ctx.loadApi.post();
 	};
@@ -2909,7 +2909,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirect = true;
 		}
 
-		ctx.saveApi = new Morebits.wiki.api(msg('saving-page', 'Saving page...'), query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+		ctx.saveApi = new Morebits.wiki.api(msg('saving-page', 'ページを保存中...'), query, fnSaveSuccess, ctx.statusElement, fnSaveError);
 		ctx.saveApi.setParent(this);
 		ctx.saveApi.post();
 	};
@@ -3485,7 +3485,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.lookupCreationApi = new Morebits.wiki.api(msg('getting-creator', 'Retrieving page creation information'), query, fnLookupCreationSuccess, ctx.statusElement, ctx.onLookupCreationFailure);
+		ctx.lookupCreationApi = new Morebits.wiki.api(msg('getting-creator', 'ページ作成情報の取得中'), query, fnLookupCreationSuccess, ctx.statusElement, ctx.onLookupCreationFailure);
 		ctx.lookupCreationApi.setParent(this);
 		ctx.lookupCreationApi.post();
 	};
@@ -3535,7 +3535,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('move');
 
-			ctx.moveApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
+			ctx.moveApi = new Morebits.wiki.api(msg('getting-token', 'トークンの取得中...'), query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
 			ctx.moveApi.setParent(this);
 			ctx.moveApi.post();
 		}
@@ -3574,7 +3574,7 @@ Morebits.wiki.page = function(pageName, status) {
 				format: 'json'
 			};
 
-			ctx.patrolApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), patrolQuery, fnProcessPatrol);
+			ctx.patrolApi = new Morebits.wiki.api(msg('getting-token', 'トークンの取得中...'), patrolQuery, fnProcessPatrol);
 			ctx.patrolApi.setParent(this);
 			ctx.patrolApi.post();
 		}
@@ -3613,7 +3613,7 @@ Morebits.wiki.page = function(pageName, status) {
 			} else {
 				var query = fnNeedTokenInfoQuery('triage');
 
-				ctx.triageApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessTriageList);
+				ctx.triageApi = new Morebits.wiki.api(msg('getting-token', 'トークンの取得中...'), query, fnProcessTriageList);
 				ctx.triageApi.setParent(this);
 				ctx.triageApi.post();
 			}
@@ -3640,7 +3640,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('delete');
 
-			ctx.deleteApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
+			ctx.deleteApi = new Morebits.wiki.api(msg('getting-token', 'トークンの取得中...'), query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
 			ctx.deleteApi.setParent(this);
 			ctx.deleteApi.post();
 		}
@@ -3665,7 +3665,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('undelete');
 
-			ctx.undeleteApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
+			ctx.undeleteApi = new Morebits.wiki.api(msg('getting-token', 'トークンの取得中...'), query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
 			ctx.undeleteApi.setParent(this);
 			ctx.undeleteApi.post();
 		}
@@ -3696,7 +3696,7 @@ Morebits.wiki.page = function(pageName, status) {
 		// protection levels from the server
 		var query = fnNeedTokenInfoQuery('protect');
 
-		ctx.protectApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectApi = new Morebits.wiki.api(msg('getting-token', 'トークンの取得中...'), query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
 	};
@@ -3731,7 +3731,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('stabilize');
 
-			ctx.stabilizeApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
+			ctx.stabilizeApi = new Morebits.wiki.api(msg('getting-token', 'トークンの取得中...'), query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
 			ctx.stabilizeApi.setParent(this);
 			ctx.stabilizeApi.post();
 		}
@@ -4019,7 +4019,7 @@ Morebits.wiki.page = function(pageName, status) {
 			var link = document.createElement('a');
 			link.setAttribute('href', mw.util.getUrl(ctx.pageName));
 			link.appendChild(document.createTextNode(ctx.pageName));
-			ctx.statusElement.info(['completed (', link, ')']);
+			ctx.statusElement.info(['完了 (', link, ')']);
 			if (ctx.onSaveSuccess) {
 				ctx.onSaveSuccess(this);  // invoke callback
 			}
@@ -4162,7 +4162,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.lookupCreationApi.query.rvlimit = 50; // modify previous query to fetch more revisions
 			ctx.lookupCreationApi.query.titles = ctx.pageName; // update pageName if redirect resolution took place in earlier query
 
-			ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement, ctx.onLookupCreationFailure);
+			ctx.lookupCreationApi = new Morebits.wiki.api('ページ作成情報の取得中', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement, ctx.onLookupCreationFailure);
 			ctx.lookupCreationApi.setParent(this);
 			ctx.lookupCreationApi.post();
 		}
@@ -4620,10 +4620,9 @@ Morebits.wiki.page = function(pageName, status) {
 			// but seems reasonable to avoid dumb values and misleading log entries (T265626)
 			if (((!ctx.protectEdit || ctx.protectEdit.level !== 'sysop') ||
 				(!ctx.protectMove || ctx.protectMove.level !== 'sysop')) &&
-				!confirm('You have cascading protection enabled on "' + ctx.pageName +
-				'" but have not selected uniform sysop-level protection.\n\n' +
-				'Click OK to adjust and proceed with sysop-level cascading protection, or Cancel to skip this action.')) {
-				ctx.statusElement.error('Cascading protection was aborted.');
+				!confirm('"' + ctx.pageName + '"ではカスケード保護が有効になっていますが、管理者レベルの保護を選択していません。\n\n' +
+				'OKをクリックすることで調節して管理者レベルのカスケード保護を続行するか、キャンセルをクリックしてこのアクションをスキップします。')) {
+				ctx.statusElement.error('カスケード保護は中止されました。');
 				ctx.onProtectFailure(this);
 				return;
 			}
@@ -6049,7 +6048,7 @@ Morebits.simpleWindow.prototype = {
 			} else if (value.textContent) {
 				button.textContent = value.textContent;
 			} else {
-				button.textContent = msg('submit', 'Submit');
+				button.textContent = msg('submit', '送信');
 			}
 
 			button.className = value.className || 'submitButtonProxy';
