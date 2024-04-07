@@ -5190,7 +5190,7 @@ Morebits.wikitext.page.prototype = {
  */
 Morebits.userspaceLogger = function(logPageName) {
 	if (!logPageName) {
-		throw new Error('no log page name specified');
+		throw new Error('記録ページ名が指定されていません');
 	}
 	/**
 	 * The text to prefix the log with upon creation, defaults to empty.
@@ -5219,7 +5219,7 @@ Morebits.userspaceLogger = function(logPageName) {
 			return def.reject();
 		}
 		var page = new Morebits.wiki.page('User:' + mw.config.get('wgUserName') + '/' + logPageName,
-			'Adding entry to userspace log'); // make this '... to ' + logPageName ?
+			'ユーザースペースログに項目を追加する'); // make this '... to ' + logPageName ?
 		page.load(function(pageobj) {
 			// add blurb if log page doesn't exist or is blank
 			var text = pageobj.getPageText() || this.initialText;

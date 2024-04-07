@@ -847,7 +847,6 @@ Twinkle.speedy.callbacks = {
 
 			var deleteMain = function(callback) {
 				thispage.setEditSummary(reason);
-				thispage.setChangeTags(Twinkle.changeTags);
 				thispage.setWatchlist(params.watch);
 				thispage.deletePage(function() {
 					thispage.getStatusElement().info('完了');
@@ -865,7 +864,6 @@ Twinkle.speedy.callbacks = {
 					!document.getElementById('ca-talk').classList.contains('new')) {
 				var talkpage = new Morebits.wiki.page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'トークページの削除');
 				talkpage.setEditSummary('削除された"' + Morebits.pageNameNorm + '"のトークページ');
-				talkpage.setChangeTags(Twinkle.changeTags);
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
 				// (otherwise success/failure messages for the previous action would be suppressed)
@@ -958,7 +956,6 @@ Twinkle.speedy.callbacks = {
 				var title = value.title;
 				var page = new Morebits.wiki.page(title, 'リダイレクト "' + title + '" の削除');
 				page.setEditSummary('[[WP:CSD#R1-3|R1-3]]: 転送先がないリダイレクト 転送先: [["' + Morebits.pageNameNorm + ']]"');
-				page.setChangeTags(Twinkle.changeTags);
 				page.deletePage(onsuccess);
 			});
 		}
@@ -1059,7 +1056,6 @@ Twinkle.speedy.callbacks = {
 					talk_page.setCreateOption('recreate');
 					talk_page.setFollowRedirect(true);
 					talk_page.setWatchlist(params.watch);
-					talk_page.setChangeTags(Twinkle.changeTags);
 					talk_page.setCallbackParameters(params);
 					talk_page.newSection(Twinkle.speedy.callbacks.user.tagComplete);
 				} else {
@@ -1105,7 +1101,7 @@ Twinkle.speedy.callbacks = {
 			// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 			var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} 記録])' : '';
 
-			var editsummary = '[[:' + Morebits.pageNameNorm + ']]の即時削除への指定を記録';
+			var editsummary = '[[:' + Morebits.pageNameNorm + ']]の即時削除への指定を記録' + Twinkle.summaryAd;
 			var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ': ';
 
 			if (params.normalizeds[0] === 'db') {
@@ -1143,7 +1139,6 @@ Twinkle.speedy.callbacks = {
 			}
 			appendText += ' ~~~~~\n';
 
-			usl.changeTags = Twinkle.changeTags;
 			usl.log(appendText, editsummary);
 		}
 	}
@@ -1486,8 +1481,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete';
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
-	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'ページをタグ付け');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 };

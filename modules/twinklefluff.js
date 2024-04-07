@@ -443,8 +443,7 @@ Twinkle.fluff.callbacks = {
 		var query = {
 			action: 'edit',
 			title: mw.config.get('wgPageName'),
-			summary: summary,
-			tags: Twinkle.changeTags,
+			summary: summary + Twinkle.summaryAd,
 			token: csrftoken,
 			undo: lastrevid,
 			undoafter: revertToRevID,
@@ -670,8 +669,7 @@ Twinkle.fluff.callbacks = {
 		var query = {
 			action: 'edit',
 			title: params.pagename,
-			summary: summary,
-			tags: Twinkle.changeTags,
+			summary: summary + Twinkle.summaryAd,
 			token: csrftoken,
 			undo: lastrevid,
 			undoafter: params.goodid,
