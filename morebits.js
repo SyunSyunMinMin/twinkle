@@ -5018,6 +5018,44 @@ Morebits.wikitext.page.prototype = {
 		return this;
 	},
 
+	removeImage: function(image) {
+		var unbinder = new Morebits.unbinder(this.text);
+		unbinder.unbind('<!--', '-->');
+
+		var image_re_string = Morebits.pageNameRegex(image);
+
+		// Check for normal image links, i.e. [[File:Foobar.png|...]]
+		// Will eat the whole link
+		var links_re = new RegExp('\\[\\[' + Morebits.namespaceRegex(6) + ':\\s*' + image_re_string + '\\s*[\\|(?:\\]\\])]');
+		var allLinks = Morebits.string.splitWeightedByKeys(unbinder.content, '[[', ']]');
+		for (var i = 0; i < allLinks.length; ++i) {
+			if (links_re.test(allLinks[i])) {
+				var replacingtext = Morebits.string.escapeRegExp(allLinks[i]);
+				var replacing = new RegExp('(\n|)' + replacingtext + '$');
+				unbinder.content = unbinder.content.replace(replacing, '').replace(allLinks[i], '');
+			}
+		}
+		// unbind the newly created comments
+		unbinder.unbind('<!--', '-->');
+
+		// Check for gallery images, i.e. instances that must start on a new line,
+		// eventually preceded with some space, and must include File: prefix
+		// Will eat the whole line.
+		var gallery_image_re = new RegExp('\\n(^\\s*' + Morebits.namespaceRegex(6) + ':\\s*' + image_re_string + '\\s*(?:\\|.*?$|$))', 'mg');
+		unbinder.content = unbinder.content.replace(gallery_image_re, '');
+
+		// unbind the newly created comments
+		unbinder.unbind('<!--', '-->');
+
+		// Check free image usages, for example as template arguments, might have the File: prefix excluded, but must be preceded by an |
+		// Will only eat the image name and the preceding bar and an eventual named parameter
+		var free_image_re = new RegExp('(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:' + Morebits.namespaceRegex(6) + ':\\s*)?' + image_re_string + ')', 'mg');
+		unbinder.content = unbinder.content.replace(free_image_re, '');
+		// Rebind the content now, we are done!
+		this.text = unbinder.rebind();
+		return this;
+	},
+
 	/**
 	 * Converts uses of [[File:`image`]] to [[File:`image`|`data`]].
 	 *
@@ -5649,7 +5687,7 @@ Morebits.batchOperation = function(currentAction) {
 				if (arg.getPageName || arg.pageName || (arg.query && arg.query.title)) {
 					// we know the page title - display a relevant message
 					var pageName = arg.getPageName ? arg.getPageName() : arg.pageName || arg.query.title;
-					statelem.info(msg('batch-done-page', pageName, 'completed ([[' + pageName + ']])'));
+					statelem.info(msg('batch-done-page', pageName, '完了 ([[' + pageName + ']])'));
 				} else {
 					// we don't know the page title - just display a generic message
 					statelem.info(msg('done', 'done'));
@@ -5660,7 +5698,7 @@ Morebits.batchOperation = function(currentAction) {
 			}
 
 		} else if (typeof arg === 'string' && ctx.options.preserveIndividualStatusLines) {
-			new Morebits.status(arg, msg('batch-done-page', arg, 'completed ([[' + arg + ']])'));
+			new Morebits.status(arg, msg('batch-done-page', arg, '完了 ([[' + arg + ']])'));
 		}
 
 		ctx.countFinishedSuccess++;
@@ -5704,8 +5742,8 @@ Morebits.batchOperation = function(currentAction) {
 				fnStartNewChunk();
 			}
 		} else if (ctx.countFinished === total) {
-			var statusString = msg('batch-progress', ctx.countFinishedSuccess, ctx.countFinished, 'Done (' + ctx.countFinishedSuccess +
-				'/' + ctx.countFinished + ' actions completed successfully)');
+			var statusString = msg('batch-progress', ctx.countFinishedSuccess, ctx.countFinished, '完了 (' + ctx.countFinishedSuccess +
+				'/' + ctx.countFinished + ' アクションが正常に完了)');
 			if (ctx.countFinishedSuccess < ctx.countFinished) {
 				ctx.statusElement.warn(statusString);
 			} else {
@@ -5719,7 +5757,7 @@ Morebits.batchOperation = function(currentAction) {
 		} else {
 			// ctx.countFinished > total
 			// just for giggles! (well, serious debugging, actually)
-			ctx.statusElement.warn('Done (overshot by ' + (ctx.countFinished - total) + ')');
+			ctx.statusElement.warn('完了 (' + (ctx.countFinished - total) + '件上回った)');
 			Morebits.wiki.removeCheckpoint();
 			ctx.running = false;
 		}

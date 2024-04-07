@@ -13,12 +13,12 @@
  */
 
 Twinkle.unlink = function twinkleunlink() {
-	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Sandbox' ||
+	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:サンドボックス' ||
 		// Restrict to extended confirmed users (see #428)
 		(!Morebits.userIsInGroup('extendedconfirmed') && !Morebits.userIsSysop)) {
 		return;
 	}
-	Twinkle.addPortletLink(Twinkle.unlink.callback, 'Unlink', 'tw-unlink', 'Unlink backlinks');
+	Twinkle.addPortletLink(Twinkle.unlink.callback, 'Unlink', 'tw-unlink', 'バックリンクの解除');
 };
 
 // the parameter is used when invoking unlink from admin speedy
@@ -26,11 +26,11 @@ Twinkle.unlink.callback = function(presetReason) {
 	var fileSpace = mw.config.get('wgNamespaceNumber') === 6;
 
 	var Window = new Morebits.simpleWindow(600, 440);
-	Window.setTitle('Unlink backlinks' + (fileSpace ? ' and file usages' : ''));
+	Window.setTitle('バックリンク' + (fileSpace ? 'とファイルの使用' : '') + 'を解除する');
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Unlink prefs', 'WP:TW/PREF#unlink');
-	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#unlink');
-	Window.addFooterLink('Give feedback', 'WT:TW');
+	Window.addFooterLink('Unlink設定', 'User:Syunsyunminmin/Twinkle/Preferences#unlink');
+	Window.addFooterLink('Twinkle help', ':en:WP:TW/DOC#unlink');
+	Window.addFooterLink('Give feedback', 'User Talk:Syunsyunminmin/Twinkle');
 
 	var form = new Morebits.quickForm(Twinkle.unlink.callback.evaluate);
 
@@ -50,18 +50,18 @@ Twinkle.unlink.callback = function(presetReason) {
 		type: 'div',
 		style: 'margin-bottom: 0.5em',
 		label: [
-			'This tool allows you to unlink all incoming links ("backlinks") from the checked pages below that point to this page' +
-				(fileSpace ? ', and/or hide all inclusions of this file by wrapping them in <!-- --> comment markup' : '') +
-				'. For instance, ',
-			linkTextBefore, ' would become ', linkTextAfter, ' and ',
-			linkPlainBefore, ' would become ', linkPlainAfter, '. This tool will not unlink redirects or links within this page ("selflinks") that point to this page. Use it with caution.'
+			'このツールを使用すると、このページを指しているすべてのリンク元 (「バックリンク」) のリンクを解除できます。' +
+				(fileSpace ? 'また、このファイルのすべての使用を <!-- --> で囲んでコメントアウトし、非表示にします。' : '') +
+				'例えば、',
+			linkTextBefore, ' が ', linkTextAfter, ' になり、 ',
+			linkPlainBefore, ' が ', linkPlainAfter, 'になります。このツールは、このページへのリダイレクトやこのページ内のリンク（「セルフリンク」）を解除しません。注意して使用してください。'
 		]
 	});
 
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason:',
+		label: '理由:',
 		value: presetReason ? presetReason : '',
 		size: 60
 	});
@@ -83,14 +83,14 @@ Twinkle.unlink.callback = function(presetReason) {
 	} else {
 		query.blfilterredir = 'nonredirects';
 	}
-	var wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks);
+	var wikipedia_api = new Morebits.wiki.api('バックリンクを取得中', query, Twinkle.unlink.callbacks.display.backlinks);
 	wikipedia_api.params = { form: form, Window: Window, image: fileSpace };
 	wikipedia_api.post();
 
 	var root = document.createElement('div');
 	root.style.padding = '15px';  // just so it doesn't look broken
 	Morebits.status.init(root);
-	wikipedia_api.statelem.status('loading...');
+	wikipedia_api.statelem.status('読込中...');
 	Window.setContent(root);
 	Window.display();
 };
@@ -100,7 +100,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	var input = Morebits.quickForm.getInputData(form);
 
 	if (!input.reason) {
-		alert('You must specify a reason for unlinking.');
+		alert('リンクを解除する理由を指定する必要があります。');
 		return;
 	}
 
@@ -108,24 +108,25 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	input.imageusage = input.imageusage || [];
 	var pages = Morebits.array.uniq(input.backlinks.concat(input.imageusage));
 	if (!pages.length) {
-		alert('You must select at least one item to unlink.');
+		alert('リンクを解除するページを少なくとも1つ選択する必要があります。');
 		return;
 	}
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	var unlinker = new Morebits.batchOperation('Unlinking ' + (input.backlinks.length ? 'backlinks' +
-			(input.imageusage.length ? ' and instances of file usage' : '') : 'instances of file usage'));
+	var unlinker = new Morebits.batchOperation((input.backlinks.length ? 'バックリンク' +
+			(input.imageusage.length ? 'およびファイルの使用' : '') : 'ファイルの使用') + 'を解除');
 	unlinker.setOption('preserveIndividualStatusLines', true);
 	unlinker.setPageList(pages);
 	var params = { reason: input.reason, unlinker: unlinker };
 	unlinker.run(function(pageName) {
-		var wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in page "' + pageName + '"');
+		var wikipedia_page = new Morebits.wiki.page(pageName, '"' + pageName + '" のリンクを解除');
 		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
 		wikipedia_page.setCallbackParameters($.extend({
 			doBacklinks: input.backlinks.indexOf(pageName) !== -1,
-			doImageusage: input.imageusage.indexOf(pageName) !== -1
+			doImageusage: input.imageusage.indexOf(pageName) !== -1,
+			doImagecomprem: input.compremove
 		}, params));
 		wikipedia_page.load(Twinkle.unlink.callbacks.unlinkBacklinks);
 	});
@@ -146,34 +147,44 @@ Twinkle.unlink.callbacks = {
 					list.push({ label: '', value: imageusage[i].title, checked: true });
 				}
 				if (!list.length) {
-					apiobj.params.form.append({ type: 'div', label: 'No instances of file usage found.' });
+					apiobj.params.form.append({ type: 'div', label: 'ファイルを使用例が見つかりません。' });
 				} else {
-					apiobj.params.form.append({ type: 'header', label: 'File usage' });
+					apiobj.params.form.append({ type: 'header', label: 'ファイルの使用状況' });
 					namespaces = [];
 					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
-						namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
+						namespaces.push(v === '0' ? '(標準)' : mw.config.get('wgFormattedNamespaces')[v]);
+					});
+					apiobj.params.form.append({
+						type: 'checkbox',
+						list: [
+							{
+								label: 'ファイルへのリンクを完全に除去する',
+								value: 'compremove',
+								name: 'compremove'
+							}
+						]
 					});
 					apiobj.params.form.append({
 						type: 'div',
-						label: 'Selected namespaces: ' + namespaces.join(', '),
-						tooltip: 'You can change this with your Twinkle preferences, at [[WP:TWPREFS]]'
+						label: '選択された名前空間: ' + namespaces.join(', '),
+						tooltip: 'これは[[利用者:Syunsyunminmin/Twinkle/Preferences|Twinkleの設定]]で変更できます。'
 					});
 					if (response['query-continue'] && response['query-continue'].imageusage) {
 						apiobj.params.form.append({
 							type: 'div',
-							label: 'First ' + mw.language.convertNumber(list.length) + ' file usages shown.'
+							label: '最初の' + mw.language.convertNumber(list.length) + '件のファイルの使用状況を表示。'
 						});
 					}
 					apiobj.params.form.append({
 						type: 'button',
-						label: 'Select All',
+						label: '全て選択',
 						event: function(e) {
 							$(Morebits.quickForm.getElements(e.target.form, 'imageusage')).prop('checked', true);
 						}
 					});
 					apiobj.params.form.append({
 						type: 'button',
-						label: 'Deselect All',
+						label: '全ての選択を外す',
 						event: function(e) {
 							$(Morebits.quickForm.getElements(e.target.form, 'imageusage')).prop('checked', false);
 						}
@@ -195,32 +206,32 @@ Twinkle.unlink.callbacks = {
 					// Label made by Twinkle.generateBatchPageLinks
 					list.push({ label: '', value: backlinks[i].title, checked: true });
 				}
-				apiobj.params.form.append({ type: 'header', label: 'Backlinks' });
+				apiobj.params.form.append({ type: 'header', label: 'バックリンク' });
 				namespaces = [];
 				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
-					namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
+					namespaces.push(v === '0' ? '(標準)' : mw.config.get('wgFormattedNamespaces')[v]);
 				});
 				apiobj.params.form.append({
 					type: 'div',
-					label: 'Selected namespaces: ' + namespaces.join(', '),
-					tooltip: 'You can change this with your Twinkle preferences, linked at the bottom of this Twinkle window'
+					label: '選択された名前空間: ' + namespaces.join(', '),
+					tooltip: 'これは、このTwinkleウィンドウの下部にリンクされている Twinkleの設定で変更できます'
 				});
 				if (response['query-continue'] && response['query-continue'].backlinks) {
 					apiobj.params.form.append({
 						type: 'div',
-						label: 'First ' + mw.language.convertNumber(list.length) + ' backlinks shown.'
+						label: '最初の' + mw.language.convertNumber(list.length) + '件のバックリンクを表示。'
 					});
 				}
 				apiobj.params.form.append({
 					type: 'button',
-					label: 'Select All',
+					label: '全て選択',
 					event: function(e) {
 						$(Morebits.quickForm.getElements(e.target.form, 'backlinks')).prop('checked', true);
 					}
 				});
 				apiobj.params.form.append({
 					type: 'button',
-					label: 'Deselect All',
+					label: '全ての選択を外す',
 					event: function(e) {
 						$(Morebits.quickForm.getElements(e.target.form, 'backlinks')).prop('checked', false);
 					}
@@ -233,7 +244,7 @@ Twinkle.unlink.callbacks = {
 				});
 				havecontent = true;
 			} else {
-				apiobj.params.form.append({ type: 'div', label: 'No backlinks found.' });
+				apiobj.params.form.append({ type: 'div', label: 'バックリンクが見つかりませんでした。' });
 			}
 
 			if (havecontent) {
@@ -258,12 +269,20 @@ Twinkle.unlink.callbacks = {
 
 		// remove image usages
 		if (params.doImageusage) {
-			text = wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out').getText();
+			if (params.doImagecomprem) {
+				text = wikiPage.removeImage(mw.config.get('wgTitle')).getText();
+			} else {
+				text = wikiPage.commentOutImage(mw.config.get('wgTitle'), 'コメントアウト').getText();
+			}
 			// did we actually make any changes?
 			if (text === oldtext) {
-				warningString = 'file usages';
+				warningString = 'ファイルの使用状況';
 			} else {
-				summaryText = 'Commenting out use(s) of file';
+				if (params.doImagecomprem) {
+					summaryText = 'のファイル使用を除去する';
+				} else {
+					summaryText = 'のファイル使用をコメントアウト';
+				}
 				oldtext = text;
 			}
 		}
@@ -273,23 +292,22 @@ Twinkle.unlink.callbacks = {
 			text = wikiPage.removeLink(Morebits.pageNameNorm).getText();
 			// did we actually make any changes?
 			if (text === oldtext) {
-				warningString = warningString ? 'backlinks or file usages' : 'backlinks';
+				warningString = warningString ? 'バックリンクまたはファイルの使用状況' : 'バックリンク';
 			} else {
-				summaryText = (summaryText ? summaryText + ' / ' : '') + 'Removing link(s) to';
+				summaryText = (summaryText ? summaryText + ' / ' : 'への') + 'リンクを解除';
 				oldtext = text;
 			}
 		}
 
 		if (warningString) {
 			// nothing to do!
-			pageobj.getStatusElement().error("Didn't find any " + warningString + ' on the page.');
+			pageobj.getStatusElement().error('ページに' + warningString + 'が見つかりませんでした。');
 			params.unlinker.workerFailure(pageobj);
 			return;
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summaryText + ' "' + Morebits.pageNameNorm + '": ' + params.reason + '.');
-		pageobj.setChangeTags(Twinkle.changeTags);
+		pageobj.setEditSummary('"' + Morebits.pageNameNorm + '"' + summaryText + ': ' + params.reason + Twinkle.summaryAd);
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(params.unlinker.workerSuccess, params.unlinker.workerFailure);
 	}
