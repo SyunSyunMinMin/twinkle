@@ -33,85 +33,70 @@ Twinkle.config.watchlistEnums = {
 
 Twinkle.config.commonSets = {
 	csdCriteria: {
-		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u1: 'U1', u2: 'U2', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4'
+		'db': 'その他 ({{即時削除|その他}})',
+		'g1': 'G1', 'g2': 'G2', 'g3': 'G3', 'g4': 'G4', 'g5': 'G5', 'g6': 'G6', 'g8': 'G8', 'g9': 'G9', 'g10': 'G10',
+		'a1': 'A1',
+		'u1': 'U1', 'u2': 'U2', 'u3': 'U3',
+		'f1-2': 'F1-2', 'f1-3': 'F1-3', 'f1-4': 'F1-4', 'f1-5': 'F1-5', 'f1-6': 'F1-6',
+		'f3': 'F3', 'f5': 'F5', 'f6': 'F6', 'f7': 'F7', 'f8': 'F8', 'f9': 'F9',
+		'c1': 'C1', 'c3': 'C3', 'c6': 'C6',
+		'r1-1': 'R1-1', 'r1-2': 'R1-2', 'r1-3': 'R1-3', 'r1-4': 'R1-4',
+		'r2-1': 'R2-1', 'r2-2': 'R2-2', 'r2-3': 'R2-3', 'r2-5': 'R2-5', 'r2-6': 'R2-6',
+		'r4': 'R4'
 	},
 	csdCriteriaDisplayOrder: [
 		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u1', 'u2', 'u5',
-		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
-		'c1',
-		'r2', 'r3', 'r4'
-	],
-	csdCriteriaNotification: {
-		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g6: 'G6 ("copy-paste move" only)',
-		g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4'
-	},
-	csdCriteriaNotificationDisplayOrder: [
-		'db',
-		'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u5',
-		'f1', 'f2', 'f3', 'f7', 'f9',
-		'c1',
-		'r2', 'r3', 'r4'
+		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10',
+		'a1',
+		'u1', 'u2', 'u3',
+		'f1-2', 'f1-3', 'f1-4', 'f1-5', 'f1-6', 'f3', 'f5', 'f6', 'f7', 'f8', 'f9',
+		'c1', 'c3', 'c6',
+		'r1-1', 'r1-2', 'r1-3', 'r1-4', 'r2-1', 'r2-2', 'r2-3', 'r2-5', 'r2-6', 'r4'
 	],
 	csdAndImageDeletionCriteria: {
-		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u1: 'U1', u2: 'U2', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f11: 'F11',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4'
+		'db': 'その他 ({{即時削除|その他}})',
+		'g1': 'G1', 'g2': 'G2', 'g3': 'G3', 'g4': 'G4', 'g5': 'G5', 'g6': 'G6', 'g8': 'G8', 'g9': 'G9', 'g10': 'G10',
+		'a1': 'A1',
+		'u1': 'U1', 'u2': 'U2', 'u3': 'U3',
+		'f1-2': 'F1-2', 'f1-3': 'F1-3', 'f1-4': 'F1-4', 'f1-5': 'F1-5', 'f1-6': 'F1-6',
+		'f3': 'F3', 'f5': 'F5', 'f6': 'F6', 'f7': 'F7', 'f8': 'F8', 'f9': 'F9',
+		'c1': 'C1', 'c3': 'C3', 'c6': 'C6',
+		'r1-1': 'R1-1', 'r1-2': 'R1-2', 'r1-3': 'R1-3', 'r1-4': 'R1-4',
+		'r2-1': 'R2-1', 'r2-2': 'R2-2', 'r2-3': 'R2-3', 'r2-5': 'R2-5', 'r2-6': 'R2-6',
+		'r4': 'R4'
 	},
 	csdAndImageDeletionCriteriaDisplayOrder: [
 		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u1', 'u2', 'u5',
-		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
-		'c1',
-		'r2', 'r3', 'r4'
+		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10',
+		'a1',
+		'u1', 'u2', 'u3',
+		'f1-2', 'f1-3', 'f1-4', 'f1-5', 'f1-6', 'f3', 'f5', 'f6', 'f7', 'f8', 'f9',
+		'c1', 'c3', 'c6',
+		'r1-1', 'r1-2', 'r1-3', 'r1-4', 'r2-1', 'r2-2', 'r2-3', 'r2-5', 'r2-6', 'r4'
 	],
 	namespacesNoSpecial: {
-		0: 'Article',
-		1: 'Talk (article)',
-		2: 'User',
-		3: 'User talk',
+		0: '標準',
+		1: 'ノート (標準)',
+		2: '利用者',
+		3: '利用者‐会話',
 		4: 'Wikipedia',
-		5: 'Wikipedia talk',
-		6: 'File',
-		7: 'File talk',
+		5: 'Wikipedia‐ノート',
+		6: 'ファイル',
+		7: 'ファイル‐ノート',
 		8: 'MediaWiki',
-		9: 'MediaWiki talk',
+		9: 'MediaWiki‐ノート',
 		10: 'Template',
-		11: 'Template talk',
+		11: 'Template‐ノート',
 		12: 'Help',
-		13: 'Help talk',
+		13: 'Help‐ノート',
 		14: 'Category',
-		15: 'Category talk',
+		15: 'Category‐ノート',
 		100: 'Portal',
-		101: 'Portal talk',
-		118: 'Draft',
-		119: 'Draft talk',
+		101: 'Portal‐ノート',
 		710: 'TimedText',
-		711: 'TimedText talk',
+		711: 'TimedText‐ノート',
 		828: 'Module',
-		829: 'Module talk'
+		829: 'Module‐ノート'
 	}
 };
 
@@ -170,9 +155,9 @@ Twinkle.config.sections = [
 			{
 				name: 'disabledModules',
 				label: '選択したTwinkleモジュールをオフにする',
-				helptip: 'ここで選択したものは使用できないので、注意してください。再び有効にするにはチェックを外してください。',
+				helptip: 'ここで選択したものは使用できないので、注意してください。再び有効にするにはチェックを外してください。<br />デフォルトでチェックがついているものはまだ準備中です。このページに関連する設定が表示されていますが、対応するモジュールは読み込まれていないはずです。',
 				type: 'set',
-				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', fluff: 'Revert and rollback' }
+				setValues: { arv: 'ARV', warn: 'Warn', talkback: 'Talkback', speedy: 'CSD', xfd: 'XfD', image: 'Image (DI)', protect: '保護 (RPP)', tag: 'Tag', diff: '差分', unlink: 'リンク解除', fluff: '差し戻しと巻き戻し' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
@@ -293,51 +278,6 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Proposed deletion (PROD)',
-		module: 'prod',
-		preferences: [
-			// TwinkleConfig.watchProdPages (string)
-			// Watchlist setting when applying prod template to page
-			{
-				name: 'watchProdPages',
-				label: 'Add article to watchlist when tagging',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-
-			// TwinkleConfig.markProdPagesAsPatrolled (boolean)
-			// If, when applying prod template to page, to mark the page as curated/patrolled (if the page was reached from NewPages)
-			{
-				name: 'markProdPagesAsPatrolled',
-				label: 'Mark page as patrolled/reviewed when tagging (if possible)',
-				helptip: 'This should probably not be checked as doing so is against best practice consensus',
-				type: 'boolean'
-			},
-
-			// TwinkleConfig.prodReasonDefault (string)
-			// The prefilled PROD reason.
-			{
-				name: 'prodReasonDefault',
-				label: 'Prefilled PROD reason',
-				type: 'string'
-			},
-
-			{
-				name: 'logProdPages',
-				label: 'Keep a log in userspace of all pages you tag for PROD',
-				helptip: 'Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you tag for PROD using Twinkle.',
-				type: 'boolean'
-			},
-			{
-				name: 'prodLogPageName',
-				label: 'Keep the PROD userspace log at this user subpage',
-				helptip: 'Enter a subpage name in this box. You will find your PROD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.',
-				type: 'string'
-			}
-		]
-	},
-
-	{
 		title: '差し戻しと巻き戻し',  // twinklefluff module
 		module: 'fluff',
 		preferences: [
@@ -441,18 +381,6 @@ Twinkle.config.sections = [
 				label: '荒らしの差し戻しの際の要約欄をカスタムする',
 				helptip: 'このボックスに要約を入力します。',
 				type: 'string'
-			}
-		]
-	},
-
-	{
-		title: 'Shared IP tagging',
-		module: 'shared',
-		preferences: [
-			{
-				name: 'markSharedIPAsMinor',
-				label: 'Mark shared IP tagging as a minor edit',
-				type: 'boolean'
 			}
 		]
 	},
@@ -753,58 +681,6 @@ Twinkle.config.sections = [
 				type: 'customList',
 				customListValueTitle: 'Template name (no curly brackets)',
 				customListLabelTitle: 'Text to show in warning list (also used as edit summary)'
-			}
-		]
-	},
-
-	{
-		title: 'Welcome user',
-		module: 'welcome',
-		preferences: [
-			{
-				name: 'topWelcomes',
-				label: 'Place welcomes above existing content on user talk pages',
-				type: 'boolean'
-			},
-			{
-				name: 'watchWelcomes',
-				label: 'Add user talk pages to watchlist when welcoming',
-				helptip: 'Doing so adds to the personal element of welcoming a user - you will be able to see how they are coping as a newbie, and possibly help them.',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-			{
-				name: 'insertUsername',
-				label: 'Add your username to the template (where applicable)',
-				helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
-				type: 'boolean'
-			},
-			{
-				name: 'quickWelcomeMode',
-				label: 'Clicking the "welcome" link on a diff page (which only appears if the editor\'s user talk page has not been created yet) will',
-				helptip: 'If you choose to welcome automatically, the template you specify below will be used.',
-				type: 'enum',
-				enumValues: { auto: 'immediately post the welcome template specified below', norm: 'prompt you to select a template' }
-			},
-			{
-				name: 'quickWelcomeTemplate',
-				label: 'Template to use when welcoming automatically',
-				helptip: 'Enter the name of a welcome template, without the curly brackets. A link to the given article will be added.',
-				type: 'string'
-			},
-			{
-				name: 'customWelcomeList',
-				label: 'Custom welcome templates to display',
-				helptip: "You can add other welcome templates, or user subpages that are welcome templates (prefixed with \"User:\"). Don't forget that these templates are substituted onto user talk pages.",
-				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Welcome dialog'
-			},
-			{
-				name: 'customWelcomeSignature',
-				label: 'Automatically sign custom welcome templates',
-				helptip: 'If your custom welcome templates contain a built-in signature within the template, turn off this option.',
-				type: 'boolean'
 			}
 		]
 	},

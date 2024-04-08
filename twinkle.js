@@ -51,7 +51,7 @@ Twinkle.defaultConfig = {
 	// General
 	userTalkPageMode: 'tab',
 	dialogLargeFont: false,
-	disabledModules: [],
+	disabledModules: ['arv', 'warn', 'talkback', 'xfd', 'image', 'tag'],
 	disabledSysopModules: [],
 
 	// ARV
@@ -85,13 +85,6 @@ Twinkle.defaultConfig = {
 	watchRequestedPages: 'yes',
 	watchPPTaggedPages: 'default',
 	watchProtectedPages: 'default',
-
-	// PROD
-	watchProdPages: '1 month',
-	markProdPagesAsPatrolled: false,
-	prodReasonDefault: '',
-	logProdPages: false,
-	prodLogPageName: 'PROD log',
 
 	// CSD
 	speedySelectionStyle: 'buttonClick',
@@ -156,15 +149,6 @@ Twinkle.defaultConfig = {
 	customTagList: [],
 	customFileTagList: [],
 	customRedirectTagList: [],
-
-	// Welcome
-	topWelcomes: false,
-	watchWelcomes: '3 months',
-	insertUsername: true,
-	quickWelcomeMode: 'norm',
-	quickWelcomeTemplate: 'welcome',
-	customWelcomeList: [],
-	customWelcomeSignature: true,
 
 	// Talkback
 	markTalkbackAsMinor: true,
