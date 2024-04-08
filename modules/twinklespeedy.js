@@ -70,7 +70,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 							cForm.talkpage.checked = !cChecked && Twinkle.getPref('deleteTalkPageOnDelete');
 						}
 						// enable redirects checkbox
-						cForm.redirects.checked = !cChecked;
+						cForm.redirects.checked = !cChecked && Twinkle.getPref('deleteRedirectsOnDelete');
 
 						Twinkle.speedy.callback.modeChanged(cForm);
 
