@@ -66,7 +66,6 @@ Twinkle.diff.callbacks = {
 		var revid = rev && rev[0].revid;
 
 		if (!revid) {
-			self.statelem.error('no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.');
 			self.statelem.error('適切な過去版が見つからないか、' + self.params.user + 'が唯一の投稿者です。中止します。');
 			return;
 		}
