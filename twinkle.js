@@ -133,9 +133,9 @@ Twinkle.defaultConfig = {
 	batchChunks: 50,
 
 	// Deprecated options, as a fallback for add-on scripts/modules
-	summaryAd: ' ([[WP:TW|TW]])',
-	deletionSummaryAd: ' ([[WP:TW|TW]])',
-	protectionSummaryAd: ' ([[WP:TW|TW]])',
+	summaryAd: ' ([[H:TW|Twinkle]]使用)',
+	deletionSummaryAd: ' ([[H:TW|Twinkle]]使用)',
+	protectionSummaryAd: ' ([[H:TW|Twinkle]]使用)',
 
 	// Formerly defaultConfig.friendly:
 	// Tag
