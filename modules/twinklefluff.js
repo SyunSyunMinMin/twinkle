@@ -518,7 +518,7 @@ Twinkle.fluff.callbacks = {
 				switch (params.type) {
 					case 'vand':
 						var diffUser = lastuser !== params.user;
-						Morebits.status.info('Info', [ '最新版' + (diffUser ? 'は同じ/64サブネット上の' : 'も'), Morebits.htmlNode('strong', userNorm),
+						Morebits.status.info('情報', [ '最新版' + (diffUser ? 'は同じ/64サブネット上の' : 'も'), Morebits.htmlNode('strong', userNorm),
 							'さんによる編集です。破壊行為とみなして、差し戻しを進めます。' ]);
 						break;
 					default:
@@ -530,7 +530,7 @@ Twinkle.fluff.callbacks = {
 					// Besides, none of the trusted bots are going to be revdel'd
 					Twinkle.fluff.trustedBots.indexOf(top.user) !== -1 && revs.length > 1 &&
 					revs[1].revid === params.revid) {
-				Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
+				Morebits.status.info('情報', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
 				index = 2;
 			} else {
 				Morebits.status.error('Error', [ '最新版は', Morebits.htmlNode('strong', lastuser), 'さんによるものであるため既に差し戻されたかもしれません。差し戻しを停止します。']);
@@ -547,7 +547,7 @@ Twinkle.fluff.callbacks = {
 		if (Twinkle.fluff.trustedBots.indexOf(params.user) !== -1) {
 			switch (params.type) {
 				case 'vand':
-					Morebits.status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. As this is a trusted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
+					Morebits.status.info('情報', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. As this is a trusted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
 					index = 2;
 					params.user = revs[1].user;
 					params.userHidden = !!revs[1].userhidden;
@@ -557,7 +557,7 @@ Twinkle.fluff.callbacks = {
 				default:
 					var cont = confirm('Normal revert was chosen, but the most recent edit was made by a trusted bot (' + userNorm + '). Do you want to revert the revision before instead?');
 					if (cont) {
-						Morebits.status.info('Info', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
+						Morebits.status.info('情報', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
 						index = 2;
 						params.user = revs[1].user;
 						params.userHidden = !!revs[1].userhidden;
@@ -603,7 +603,7 @@ Twinkle.fluff.callbacks = {
 		var userHasAlreadyConfirmedAction = false;
 		if (params.type !== 'vand' && count > 1) {
 			if (!confirm(userNorm + 'さんは' + mw.language.convertNumber(count) + '回以上の編集を連続して行いました。本当にすべて差し戻しますか？')) {
-				Morebits.status.info('Notice', '差し戻しを中止');
+				Morebits.status.info('通知', '差し戻しを中止');
 				return;
 			}
 			userHasAlreadyConfirmedAction = true;
@@ -715,11 +715,11 @@ Twinkle.fluff.callbacks = {
 		} else if (edit.nochange) {
 			apiobj.statelem.error('差し戻し先の版は、現在の版の内容と同じです。');
 		} else {
-			apiobj.statelem.info('done');
+			apiobj.statelem.info('完了');
 			var params = apiobj.params;
 
 			if (params.notifyUser && !params.userHidden) { // notifyUser only from main, not from toRevision
-				Morebits.status.info('Info', [ '利用者:', Morebits.htmlNode('strong', params.user), 'の会話ページ編集フォームを開きます' ]);
+				Morebits.status.info('情報', [ '利用者:', Morebits.htmlNode('strong', params.user), 'の会話ページ編集フォームを開きます' ]);
 
 				var url = mw.util.getUrl('User talk:' + params.user, {
 					action: 'edit',
@@ -792,7 +792,7 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, customString) {
 			var contribsLink = '[[Special:Contributions/' + userName + '|' + userName + ']]';
 			var contribsLen = unescape(encodeURIComponent(contribsLink)).length;
 			if (resultLen + contribsLen <= 499) {
-				var talkLink = ' ([[User talk:' + userName + '|トーク]])';
+				var talkLink = ' ([[User talk:' + userName + '|会話]])';
 				if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 499) {
 					result = Morebits.string.safeReplace(result, '$USER', contribsLink + talkLink);
 				} else {
