@@ -822,19 +822,13 @@ Twinkle.speedy.callbacks = {
 
 	sysop: {
 		main: function(params) {
-			var reason;
-			if (params.normalizeds[0] === 'db') {
-				reason = prompt('削除記録に入力される削除要約を入力してください:', '');
+			var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params);
+			Twinkle.speedy.callbacks.parseWikitext(code, function(reason) {
+				if (params.promptForSummary) {
+					reason = prompt('使用する削除要約を入力するか、またはOKを押して自動的に生成される要約を使用します。', reason);
+				}
 				Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
-			} else {
-				var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params);
-				Twinkle.speedy.callbacks.parseWikitext(code, function(reason) {
-					if (params.promptForSummary) {
-						reason = prompt('使用する削除要約を入力するか、またはOKを押して自動的に生成される要約を使用します。', reason);
-					}
-					Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
-				});
-			}
+			});
 		},
 		deletePage: function(reason, params) {
 			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'ページを削除');
