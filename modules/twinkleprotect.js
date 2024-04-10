@@ -1506,7 +1506,7 @@ Twinkle.protect.callbacks = {
 		}
 
 		if (params.tag === 'none') {
-			summary = '保護テンプレートの除去中';
+			summary = '保護(依頼)テンプレートの除去';
 		} else {
 			tag = params.tag;
 			if (params.reason) {
@@ -1547,10 +1547,10 @@ Twinkle.protect.callbacks = {
 					text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
 				}
 			}
-			summary = '{{' + params.tag + '}}を追加' + Twinkle.summaryAd;
+			summary = '{{' + params.tag + '}}を追加';
 		}
 
-		protectedPage.setEditSummary(summary);
+		protectedPage.setEditSummary(summary + Twinkle.summaryAd);
 		// protectedPage.setChangeTags(Twinkle.changeTags);
 		protectedPage.setWatchlist(Twinkle.getPref('watchPPTaggedPages'));
 		protectedPage.setPageText(text);
