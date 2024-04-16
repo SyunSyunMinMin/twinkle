@@ -528,7 +528,13 @@ Twinkle.speedy.articleList = [
 	{
 		label: 'A1: 定義になっていない、あるいは文章になっていないもの',
 		value: '記事1',
-		tooltip: '定義がないということの意味は「『項目名は○○である』という定義文がない」という意味ではありません。冒頭に定型定義文がないことは、即時削除の理由とはなりません。また、定義文があっても百科事典としての解説に足る定義がないものは、対象となります。(1) 項目名だけ書いてあるもの。(2) 言語間リンク・カテゴリ・外部リンクのみのページ。(3) 文章になっているが、定義になっていないもの（例：「彼は非常に有名で多くの人に慕われていた。死ぬまでに3冊の本を書いて社会に貢献した。」）。(4) その他、単なる単語の羅列等。'
+		tooltip: '定義がないということの意味は「『項目名は○○である』という定義文がない」という意味ではありません。冒頭に定型定義文がないことは、即時削除の理由とはなりません。また、定義文があっても百科事典としての解説に足る定義がないものは、対象となります。(1) 項目名だけ書いてあるもの。(2) 言語間リンク・カテゴリ・外部リンクのみのページ。(3) 文章になっているが、定義になっていないもの（例：「彼は非常に有名で多くの人に慕われていた。死ぬまでに3冊の本を書いて社会に貢献した。」）。(4) その他、単なる単語の羅列等。',
+		subgroup: {
+			name: 'no_definition',
+			type: 'input',
+			label: '定義なしと判断した理由:',
+			size: 60
+		}
 	}
 ];
 
@@ -1219,6 +1225,18 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case '全般10':  // G10
 				if (form['csd.banned_user'] && form['csd.banned_user'].value) {
 					currentParams['2'] = form['csd.banned_user'].value;
+				}
+				break;
+
+			case '記事1':  // A1
+				if (form['csd.no_definition']) {
+					var nodefinition = form['csd.no_definition'].value;
+					if (!nodefinition || !nodefinition.trim()) {
+						alert('CSD A1:  定義なしと判断した理由を入力してください');
+						parameters = null;
+						return false;
+					}
+					currentParams[2] = nodefinition;
 				}
 				break;
 
