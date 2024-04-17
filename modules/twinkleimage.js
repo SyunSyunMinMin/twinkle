@@ -146,8 +146,7 @@ Twinkle.image.callbacks = {
 		}
 
 		pageobj.setPageText(tag + text);
-		pageobj.setEditSummary('このファイルは[[WP:CSD#' + params.normalized + '|CSD ' + params.normalized + ']]に従い削除される予定です (' + params.type + ')');
-		pageobj.setChangeTags(Twinkle.changeTags);
+		pageobj.setEditSummary('このファイルは[[WP:CSD#' + params.normalized + '|CSD ' + params.normalized + ']]に従い削除される予定です (' + params.type + ')' + Twinkle.summaryAd);
 		pageobj.setWatchlist(Twinkle.getPref('deliWatchPage'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
@@ -213,7 +212,6 @@ Twinkle.image.callbacks = {
 
 		var editsummary = '[[:' + Morebits.pageNameNorm + ']]の即時削除への指定を記録' + Twinkle.summaryAd;
 
-		usl.changeTags = Twinkle.changeTags;
 		usl.log(appendText, editsummary);
 	}
 };
