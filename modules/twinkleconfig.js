@@ -157,7 +157,7 @@ Twinkle.config.sections = [
 				label: '選択したTwinkleモジュールをオフにする',
 				helptip: 'ここで選択したものは使用できないので、注意してください。再び有効にするにはチェックを外してください。<br />デフォルトでチェックがついているものはまだ準備中です。このページに関連する設定が表示されていますが、対応するモジュールは読み込まれていないはずです。',
 				type: 'set',
-				setValues: { arv: 'ARV', warn: 'Warn', talkback: 'Talkback', speedy: 'CSD', xfd: 'XfD', image: 'Image (DI)', protect: '保護 (RPP)', tag: 'Tag', diff: '差分', unlink: 'リンク解除', fluff: '差し戻しと巻き戻し' }
+				setValues: { arv: 'ARV', warn: 'Warn', talkback: 'Talkback', speedy: 'CSD', xfd: 'XfD', image: '画像 (DI)', protect: '保護 (RPP)', tag: 'Tag', diff: '差分', unlink: 'リンク解除', fluff: '差し戻しと巻き戻し' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
@@ -219,14 +219,14 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Image deletion (DI)',
+		title: '画像削除 (DI)',
 		module: 'image',
 		preferences: [
 			// TwinkleConfig.notifyUserOnDeli (boolean)
 			// If the user should be notified after placing a file deletion tag
 			{
 				name: 'notifyUserOnDeli',
-				label: 'Check the "notify initial uploader" box by default',
+				label: '既定で"アップロード者に通知"にチェックを入れる',
 				type: 'boolean'
 			},
 
@@ -234,7 +234,7 @@ Twinkle.config.sections = [
 			// The watchlist setting of the page tagged for deletion.
 			{
 				name: 'deliWatchPage',
-				label: 'Add image page to watchlist when tagging',
+				label: 'タグ付け時にファイルページをウォッチリストに追加',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -243,7 +243,7 @@ Twinkle.config.sections = [
 			// The watchlist setting of the user talk page if a notification is placed.
 			{
 				name: 'deliWatchUser',
-				label: 'Add user talk page of initial uploader to watchlist when notifying',
+				label: '通知時に、アップロード者の会話ページをウォッチリストに追加する',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			}
