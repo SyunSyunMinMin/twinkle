@@ -51,7 +51,7 @@ Twinkle.defaultConfig = {
 	// General
 	userTalkPageMode: 'tab',
 	dialogLargeFont: false,
-	disabledModules: ['arv', 'warn', 'talkback', 'xfd', 'image', 'tag'],
+	disabledModules: ['arv', 'warn', 'talkback', 'xfd', 'tag'],
 	disabledSysopModules: [],
 
 	// ARV
