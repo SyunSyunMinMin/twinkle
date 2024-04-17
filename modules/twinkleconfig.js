@@ -1189,7 +1189,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 			box.appendChild(document.createTextNode('Twinkle個人設定を設定したい場合、'));
 			link = document.createElement('a');
-			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').project] + ':Syunsyunminmin/Twinkle/Preferences'));
+			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':Syunsyunminmin/Twinkle/Preferences'));
 			link.appendChild(document.createTextNode('Twinkle個人設定パネル'));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode('を使用して行えます。'));
