@@ -380,7 +380,8 @@ Twinkle.config.sections = [
 				name: 'SummaryOnVandalRevert',
 				label: '荒らしの差し戻しの際の要約欄をカスタムする',
 				helptip: 'このボックスに要約を入力します。',
-				type: 'string'
+				type: 'string',
+				obsolete: 'vandusersummary'
 			}
 		]
 	},
@@ -937,7 +938,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				}
 				cell = document.createElement('td');
 
-				var label, input, gotPref = Twinkle.getPref(pref.name);
+				var label, input, gotPref = Twinkle.getPref(pref.name), obsoletePref = Twinkle.getPref(pref.obsolete);
 				switch (pref.type) {
 
 					case 'boolean':  // create a checkbox
@@ -948,7 +949,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						input.setAttribute('type', 'checkbox');
 						input.setAttribute('id', pref.name);
 						input.setAttribute('name', pref.name);
-						if (gotPref === true) {
+						if (gotPref === true || obsoletePref === true) {
 							input.setAttribute('checked', 'checked');
 						}
 						label.appendChild(input);
@@ -982,6 +983,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 						if (gotPref) {
 							input.setAttribute('value', gotPref);
 						}
+						if (obsoletePref) {
+							input.setAttribute('value', obsoletePref);
+						}
 						cell.appendChild(input);
 						break;
 
@@ -1005,12 +1009,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
 							var option = document.createElement('option');
 							option.setAttribute('value', enumvalue);
-							if ((gotPref === enumvalue) ||
+							if ((gotPref === enumvalue || obsoletePref === enumvalue) ||
 								// Hack to convert old boolean watchlist prefs
 								// to corresponding enums (added in v2.1)
-								(typeof gotPref === 'boolean' &&
-								((gotPref && enumvalue === 'yes') ||
-								(!gotPref && enumvalue === 'no')))) {
+								((typeof gotPref === 'boolean' || typeof obsoletePref === 'boolean') &&
+								(((gotPref || obsoletePref) && enumvalue === 'yes') ||
+								(!(gotPref && obsoletePref) && enumvalue === 'no')))) {
 								option.setAttribute('selected', 'selected');
 							}
 							option.appendChild(document.createTextNode(enumdisplay));
@@ -1036,12 +1040,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 							check.setAttribute('type', 'checkbox');
 							check.setAttribute('id', pref.name + '_' + itemkey);
 							check.setAttribute('name', pref.name + '_' + itemkey);
-							if (gotPref && gotPref.indexOf(itemkey) !== -1) {
+							if ((gotPref && gotPref.indexOf(itemkey) !== -1) || (obsoletePref && obsoletePref.indexOf(itemkey) !== -1)) {
 								check.setAttribute('checked', 'checked');
 							}
 							// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
 							if (pref.name === 'unlinkNamespaces') {
-								if (gotPref && gotPref.indexOf(parseInt(itemkey, 10)) !== -1) {
+								if ((gotPref && gotPref.indexOf(parseInt(itemkey, 10)) !== -1) || (obsoletePref && obsoletePref.indexOf(parseInt(itemkey, 10)) !== -1)) {
 									check.setAttribute('checked', 'checked');
 								}
 							}
@@ -1081,7 +1085,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						button.addEventListener('click', Twinkle.config.listDialog.display, false);
 						// use jQuery data on the button to store the current config value
 						$(button).data({
-							value: gotPref,
+							value: (obsoletePref) ? obsoletePref : gotPref,
 							pref: pref
 						});
 						button.appendChild(document.createTextNode('アイテムを編集'));
@@ -1575,7 +1579,6 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 
 	pageobj.setPageText(text);
 	pageobj.setEditSummary('Twinkle個人設定を保存: [[:' + Morebits.pageNameNorm + ']]からの自動編集');
-	pageobj.setChangeTags(Twinkle.changeTags);
 	pageobj.setCreateOption('recreate');
 	pageobj.save(Twinkle.config.saveSuccess);
 };
