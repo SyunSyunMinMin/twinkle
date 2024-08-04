@@ -1412,9 +1412,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 				reason += input.reason;
 			}
-			if (reason !== '' && reason.charAt(reason.length - 1) !== '.') {
-				reason += '.';
-			}
 
 			var rppparams = {
 				reason: reason,
